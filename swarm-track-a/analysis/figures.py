@@ -107,9 +107,8 @@ def main() -> None:
     if gi and gj:
         ax.add_patch(plt.Rectangle((min(gj) - 0.5, min(gi) - 0.5), len(gj), len(gi), fill=False,
                                    edgecolor=CRIMSON_DEEP, lw=3.4))
-        ax.annotate("gemma block", xy=(min(gj) + len(gj) / 2 - 0.5, min(gi) - 0.5), xytext=(min(gj) + len(gj) / 2 - 0.5, -0.95),
-                    color=CRIMSON_DEEP, fontsize=10.5, fontweight="bold", ha="center", annotation_clip=False,
-                    arrowprops=dict(arrowstyle="-", color=CRIMSON_DEEP, lw=1.2))
+        ax.text(min(gj) + len(gj) / 2 - 0.5, -0.75, "gemma block", color="#8E2340",
+                fontsize=12, fontweight="bold", ha="center", clip_on=False)
     cb = fig.colorbar(im, ax=ax, fraction=0.028, pad=0.02)
     cb.set_label("TPR at per-pair 5% FPR" if args.value == "tpr" else "AUROC", color=MUTED, fontsize=10)
     cb.ax.tick_params(color=MUTED, labelcolor=INK, labelsize=9)
