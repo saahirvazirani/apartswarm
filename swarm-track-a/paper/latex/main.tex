@@ -172,7 +172,10 @@ exactly 85, so they pass on the tie (Appendix~\ref{app:transcripts}).
 \subsection{Mechanism: every surface-level account ruled out}
 Telling the monitor the author's name changes the diagonal by $-0.5$ $[-3.7, +3.6]$ points (null). Paraphrasing every
 submission with a fixed rewriter leaves the gap intact (0.61 $\to$ 0.57 own, 0.72 $\to$ 0.69 cross). Having gemma-31b
-itself rewrite every submission produces no writer-specific blind spot ($-1.0$ $[-6.0, +4.3]$). The excuse vocabulary
+itself rewrite every submission produces no writer-specific blind spot ($-1.0$ $[-6.0, +4.3]$). A \emph{cross-family}
+paraphraser (deepseek, pre-registered to close the gemma-flavoured-paraphrase confound) likewise leaves the deficit:
+after it rewrites every gemma submission, the gemma own-model cells still catch 0.24 versus 0.51 cross-family
+(diagonal-specific score delta $-3.3$ $[-7.3, +0.4]$). The excuse vocabulary
 of misses is kinship-independent (\S4.3). Raw score levels even reverse the familiarity prediction: gemma monitors
 score gemma-written code as \emph{more} suspicious on average, benign included --- the deficit is created at the
 threshold, by gemma's high scores on its own benign telemetry. (These nulls are powered to detect $\approx$4-point

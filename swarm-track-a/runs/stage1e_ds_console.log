@@ -4,3 +4,9 @@ calls 157 | cache hits 0 | stalls 4 | credits this session 0.0137 | total 26.374
   gemma-4-26b-a4b-it: 51 scores, 0 parse failures (0.0%)
   qwen3.8-27b: 51 scores, 0 parse failures (0.0%)
 done in 95s | new scores 153 | credits 0.0137 | /Users/siddharthgupta/Desktop/Code/apartswarm/swarm-track-a/runs/stage1e_ds/scores.jsonl
+394 kept submissions x 3 monitors x 3 draws = 3546 (3393 to do)
+calls 3756 | cache hits 0 | stalls 362 | credits this session 0.2354 | total 26.609/150.0
+  gemma-4-31b-it: 1182 scores, 14 parse failures (1.2%)
+  gemma-4-26b-a4b-it: 1182 scores, 0 parse failures (0.0%)
+  qwen3.8-27b: 1182 scores, 0 parse failures (0.0%)
+done in 4701s | new scores 3393 | credits 0.2354 | /Users/siddharthgupta/Desktop/Code/apartswarm/swarm-track-a/runs/stage1e_ds/scores.jsonl

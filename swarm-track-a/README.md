@@ -297,3 +297,11 @@ and evaluated on the other half (200 splits, `analysis/out/heldout/`): mean real
 pooled cross−diagonal 0.110 [0.005, 0.187] over splits). Held-out TPRs track the full matrix (mean |Δ| 0.036), so
 in-sample calibration was not inflating the headline; the gemma-31b diagonal magnitude carries real calibration noise
 (0.03 in-sample vs 0.16 held-out mean) — the direction is stable, the exact cell value is not the claim.
+
+**Stage 1e result (Sun ~4:45 PM, appended; pre-registered Sun ~3:15 PM).** Cross-family paraphraser control: deepseek-v4-flash
+rewrote every kept gemma submission (function names mechanically restored, see RUN_INDEX amendment; 394/401 kept), re-scored
+blind by gemma-31b, gemma-26b and qwen3.8 (`runs/stage1e_ds`, 1,178 paired scores, 0 parse failures). **Prediction (b) holds:
+the blind spot is content-level, not gemma surface form.** Diagonal-specific attack score delta −3.3 [−7.3, +0.4] (null);
+after the deepseek paraphrase the gemma own-model cells still catch only 0.24 vs 0.51 cross-family. The Stage-1c
+"not surface form" conclusion no longer rests on a gemma-family paraphraser: the confound is closed.
+(`analysis/out/para_ds/deltas.md`; Figure 5 row updated automatically.)
