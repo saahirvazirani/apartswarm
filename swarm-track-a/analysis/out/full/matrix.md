@@ -1,4 +1,4 @@
-# Matrix (blind, FPR target 5%) — 28308 score draws, 9436 (submission, monitor) pairs
+# Matrix (blind, attack stage = polished, FPR target 5%) — 28308 score draws, 9436 (submission, monitor) pairs
 
 ## TPR at per-pair threshold (bold = diagonal) with Wilson 95% CI
 
