@@ -282,3 +282,11 @@ per pair) and recompute those cells' TPR at 5% FPR, plus a held-out split (calib
 FPR and TPR on the other half). **Predictions, stated before launch:** (a) thresholds stabilize and the gemma own-family
 deficit persists with tighter intervals (our expectation); or (b) the deficit shrinks materially, indicating the original
 effect leaned on thin calibration tails — reported as-is either way.
+
+**Second correction note (Sun ~5:25 PM, appended; supersedes the ~3:15 PM note).** A blind reviewer pass found that the
+Makefile's `STAGE1` glob also matched `runs/stage1_logic/`, so the ~3:15 PM "final recomputed values" were themselves
+computed on a matrix contaminated by 6 logic-attack submissions (row n's summed to 656, not 650). After narrowing the glob
+(`runs/stage1_mon*` only) and regenerating everything, the clean values match the original 1:15 AM headline block above:
+same-model 0.584 [0.540, 0.630] vs cross-family 0.718 [0.675, 0.762], gap −0.134 [−0.168, −0.100]; `same_model` log-odds
+−0.56, OR 0.57 [0.47, 0.70], p = 2.6e-8; `same_family_diff_model` OR 0.74 [0.61, 0.90]. The 1:15 AM paragraph was correct
+as written; quote it. Fix and affected-output regeneration recorded in `RUN_INDEX.md` (Sun 4:45 PM row).

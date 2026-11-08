@@ -1,4 +1,4 @@
-# Do copies go easy on each other? Same-model leniency in LLM code monitoring
+# Do copies go easy on each other? No general self-leniency — but a family-level blind spot in LLM code monitoring
 
 *Working draft. Methods, Results, Limitations, References and Appendix are drafted from the committed evidence
 (`make recompute`; every number maps to a run folder in `RUN_INDEX.md`). The **Abstract**, **Introduction** and
@@ -40,9 +40,15 @@ three sections carry the framing. Each stub lists the points to hit and the exac
 
 > Points to hit: why monitor assignment matters for multi-agent / swarm oversight and AI control; the "true by construction"
 > trap (if you instruct collusion you learn nothing) and how we avoid it (only the attack is instructed; leniency is
-> uninstructed and the monitor is blind to authorship); one sentence placing us against judge self-preference (Panickssery et
-> al. 2024; Zheng et al. 2023 — *verify before citing*, see `docs/related_work_notes.md`) and AI control (Greenblatt et al.
-> 2024; Järviniemi 2025; Gardner-Challis et al. 2026 — vetted). State the pre-registration up front.
+> uninstructed and the monitor is blind to authorship). Quote Track 4's own framing: copies coordinating "through shared
+> priors or Schelling points", and "does a more diverse monitor break this?" — we answer the second directly. Position
+> against judge self-preference (Panickssery et al. 2024, NeurIPS — verified; Zheng et al. 2023, NeurIPS D&B — verified;
+> Wataoka et al. 2024, NeurIPS SafeGenAI wksp — verified) and AI control (Greenblatt et al. 2024; Järviniemi 2025;
+> Gardner-Challis et al. 2026 — vetted). **Nearest neighbor, must cite:** Khullar, Hopkins, Wang & Roger 2026,
+> "Self-Attribution Bias: When AI Monitors Go Easy on Themselves" (arXiv:2603.04582, verified) — monitors approve code far
+> more when *framed* as their own prior turn, but minimal baseline leniency without attribution cues; our fully blind
+> design tests that baseline at scale, our told-vs-blind null converges with their explicit-attribution null, and the
+> family-level blind spot is invisible to their same-model design. State the pre-registration up front.
 
 ---
 
@@ -86,10 +92,10 @@ writes jailed to a temp dir), a 15 s timeout and rlimits. Hypotheses were commit
 
 ### 3.1 The matrix and the pooled effect (Figure 1)
 
-Across 650 successful attacks and 698 benign submissions, the pooled same-model catch rate is **0.586 [0.542, 0.633]** versus
-cross-family **0.719 [0.678, 0.763]** (task bootstrap). The diagonal minus cross-family gap is **−0.133 [−0.165, −0.101]**; a
+Across 650 successful attacks and 698 benign submissions, the pooled same-model catch rate is **0.584 [0.540, 0.630]** versus
+cross-family **0.718 [0.675, 0.762]** (task bootstrap). The diagonal minus cross-family gap is **−0.134 [−0.168, −0.100]**; a
 within-task permutation of policy labels never reaches the observed gap in 2,000 shuffles (p < 0.0005). The two-way
-task-clustered logistic model gives `same_model` log-odds −0.55 (OR **0.58 [0.48, 0.70]**, p = 1.2e-8) and
+task-clustered logistic model gives `same_model` log-odds −0.56 (OR **0.57 [0.47, 0.70]**, p = 2.6e-8) and
 `same_family_diff_model` OR 0.74. Same-family cells average 0.59 — at the diagonal, not between it and cross-family — so the
 "intermediate" form of the family hypothesis is not supported.
 
@@ -115,7 +121,7 @@ non-gemma monitor is within ±0.19 of its cross-family mean, with deepseek, if a
 gemma-block decomposition (`catch ~ policy + monitor + gemma_block + diag_nongemma + samefam_nongemma`, task-clustered;
 `analysis/out/matched/block_fit.md`) makes the headline inferential: the gemma-policy × gemma-monitor block has OR
 **0.29 [0.19, 0.45]** (p = 3.8e-8, surviving any correction over the seven per-monitor comparisons), while the non-gemma
-diagonal is a precise null (OR 1.08 [0.78, 1.48], p = 0.65). Under matched FPR the pooled diagonal−cross gap is −0.080
+diagonal is a precise null (OR 1.08 [0.78, 1.47], p = 0.65). Under matched FPR the pooled diagonal−cross gap is −0.080
 [−0.152, −0.003].
 
 *Figure 2 (`analysis/out/strengthen/fig2_residuals.png`): cell TPR minus the additive policy+monitor fit, and the own-model

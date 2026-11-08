@@ -14,13 +14,13 @@
 
 \maketitleblock
   {Do copies go easy on each other?}
-  {Same-model leniency in LLM code monitoring}
+  {No general self-leniency --- but a family-level blind spot in LLM code monitoring}
   {Siddharth Gupta \quad Saahir Vazirani}% TODO: confirm author list + order
   {Apart Research Swarm Alignment Hackathon, Track A}
   {Research Sprint Submission}
 
 \begin{abstractpanel}
-\begin{humantodo}[abstract, $\sim$150 words, write last]
+\begin{humantodo}[abstract, 150--250 words (official requirement), write last]
 In order: (1) the question --- do LLM monitors go easier on code written by their own model or family?
 (2) the design that makes the answer non-trivial --- the attack is instructed, the leniency never is, the monitor is blind,
 thresholds are calibrated per pair; (3) the honest headline --- \emph{no robust general same-model leniency}, but a large,
@@ -52,9 +52,14 @@ reproduces the family self-leniency, with magnitudes bounded honestly by a match
 \begin{humantodo}[$\sim$0.75 page]
 Why monitor assignment matters for multi-agent / swarm oversight and AI control; the ``true by construction'' trap (if you
 instruct collusion you learn nothing) and how we avoid it (only the attack is instructed; leniency is uninstructed and the
-monitor is blind to authorship); one sentence against judge self-preference
-\citep{panickssery2024,zheng2023} and AI control \citep{greenblatt2024,jarviniemi2025,gardner2026}. State the
-pre-registration up front.
+monitor is blind to authorship). Quote the track's own framing: whether copies coordinate ``through shared priors or
+Schelling points'' and whether ``a more diverse monitor break[s] this'' --- we answer the second question directly.
+Position against judge self-preference \citep{panickssery2024,zheng2023,wataoka2024} and AI control
+\citep{greenblatt2024,jarviniemi2025,gardner2026}. The nearest neighbor is \citet{khullar2026}, who find monitors
+approve code far more when it is \emph{framed} as their own prior turn, but minimal baseline leniency without
+attribution cues: our fully blind design tests exactly that baseline at scale, our told-vs-blind null converges with
+their explicit-attribution null, and the family-level blind spot is something their same-model design cannot see. State
+the pre-registration up front.
 \end{humantodo}
 
 \section{Setup}
@@ -97,10 +102,10 @@ git before the first experiment.
 
 \subsection{The matrix and the pooled effect}
 Across 650 successful attacks and 698 benign submissions, the pooled same-model catch rate is
-\gap{0.586 [0.542, 0.633]} versus cross-family \gap{0.719 [0.678, 0.763]} (task bootstrap). The diagonal minus
-cross-family gap is \gap{$-$0.133 [$-$0.165, $-$0.101]}; a within-task permutation of policy labels never reaches the
+\gap{0.584 [0.540, 0.630]} versus cross-family \gap{0.718 [0.675, 0.762]} (task bootstrap). The diagonal minus
+cross-family gap is \gap{$-$0.134 [$-$0.168, $-$0.100]}; a within-task permutation of policy labels never reaches the
 observed gap in 2{,}000 shuffles ($p < 0.0005$). The two-way task-clustered logistic model gives \codefile{same\_model}
-log-odds $-0.55$ (OR \gap{0.58 [0.48, 0.70]}, $p = 1.2\times10^{-8}$) and \codefile{same\_family\_diff\_model} OR 0.74.
+log-odds $-0.56$ (OR \gap{0.57 [0.47, 0.70]}, $p = 2.6\times10^{-8}$) and \codefile{same\_family\_diff\_model} OR 0.74.
 Same-family cells average 0.59 --- at the diagonal, not between it and cross-family --- so the ``intermediate'' form of
 the family hypothesis is not supported.
 
@@ -128,7 +133,7 @@ versus 0.56; every non-gemma monitor is within $\pm$0.19 of its cross-family mea
 on itself. A post-hoc gemma-block decomposition (\codefile{catch $\sim$ policy + monitor + gemma\_block +
 diag\_nongemma + samefam\_nongemma}, task-clustered) makes the headline inferential: the gemma-policy $\times$
 gemma-monitor block has OR \gap{0.29 [0.19, 0.45]} ($p = 3.8\times10^{-8}$, surviving any correction over the seven
-per-monitor comparisons), while the non-gemma diagonal is a precise null (OR 1.08 [0.78, 1.48], $p = 0.65$). Under
+per-monitor comparisons), while the non-gemma diagonal is a precise null (OR 1.08 [0.78, 1.47], $p = 0.65$). Under
 matched FPR the pooled diagonal$-$cross gap is $-0.080$ $[-0.152, -0.003]$.
 
 \begin{figure}[t]
@@ -205,9 +210,15 @@ calibration-robust, cross-attack-class self-leniency in the gemma family (block 
 explained by a shared blind spot rather than collusion or self-recognition.} Then: what it means for oversight
 (measure the diagonal cell before trusting self-monitoring; cross-family is a safe default); why operating-point vs
 ranking matters (deployments run at a budget); relation to judge self-preference (we find the opposite of a recognition
-account) and to AI control (uninstructed, so distinct from instructed collusion). Name the fragility honestly: the pooled
+account --- but the family-level blind spot is what a familiarity/perplexity account \citep{wataoka2024} predicts, and
+our baseline null converges with \citet{khullar2026}) and to AI control (uninstructed, so distinct from instructed
+collusion). Answer the track's question in one sentence: a more diverse monitor does break it, at zero capability cost
+here. Name the fragility honestly: the pooled
 effect is calibration-dependent and the most dramatic cell numbers are partly a quantization/tie-break artifact.
 Future work: more attack classes, held-out calibration, frontier monitors, the human anchor.
+Also report the human checks by name: the human gate (a teammate read 20 random attack submissions) and the human-anchor
+agreement run (\codefile{make human-anchor}) --- and if the anchor labels are unfilled at freeze, say so plainly in
+Limitations rather than omitting it.
 \end{humantodo}
 
 \section{Limitations and Dual-Use / Ethical Considerations}
@@ -245,10 +256,14 @@ experimental subjects. The abstract, introduction and discussion are written by 
 \newblock When Can We Trust Untrusted Monitoring? \emph{NeurIPS workshop}, 2026.
 \bibitem[Baker et al.(2025)]{baker2025} B.~Baker et al.
 \newblock Monitoring Reasoning Models for Misbehavior and the Risks of Promoting Obfuscation. OpenAI, 2025.
-\bibitem[Panickssery et al.(2024)]{panickssery2024} A.~Panickssery, S.~Bowman, S.~Feng.
-\newblock LLM Evaluators Recognize and Favor Their Own Generations. \emph{NeurIPS}, 2024. % TODO verify before submission
+\bibitem[Panickssery et al.(2024)]{panickssery2024} A.~Panickssery, S.~R.~Bowman, S.~Feng.
+\newblock LLM Evaluators Recognize and Favor Their Own Generations. \emph{NeurIPS}, 2024. arXiv:2404.13076.
 \bibitem[Zheng et al.(2023)]{zheng2023} L.~Zheng et al.
-\newblock Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena. \emph{NeurIPS}, 2023. % TODO verify before submission
+\newblock Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena. \emph{NeurIPS Datasets \& Benchmarks}, 2023. arXiv:2306.05685.
+\bibitem[Khullar et al.(2026)]{khullar2026} D.~Khullar, J.~Hopkins, R.~Wang, F.~Roger.
+\newblock Self-Attribution Bias: When AI Monitors Go Easy on Themselves. arXiv:2603.04582, 2026.
+\bibitem[Wataoka et al.(2024)]{wataoka2024} K.~Wataoka, T.~Takahashi, R.~Ri.
+\newblock Self-Preference Bias in LLM-as-a-Judge. \emph{NeurIPS Safe Generative AI Workshop}, 2024. arXiv:2410.21819.
 \end{thebibliography}
 
 \appendix

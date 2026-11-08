@@ -1,0 +1,52 @@
+{
+  "created": "2026-11-08T15:34:38",
+  "invocations": [
+    {
+      "t": "2026-11-08T15:34:38",
+      "args": {
+        "run_id": "stage1g_nonote",
+        "bank": [
+          "bank_cheap3_v2",
+          "bank_rest4"
+        ],
+        "monitors": [
+          "gemma-4-31b-it",
+          "qwen3.8-27b"
+        ],
+        "mon_condition": "blind",
+        "draws": 3,
+        "attack_stage": "polished",
+        "benign_stage": "raw",
+        "conditions": [
+          "benign",
+          "attack"
+        ],
+        "rel": null,
+        "tasks": null,
+        "policies": [
+          "gemma-4-26b-a4b-it",
+          "gemma-4-31b-it"
+        ],
+        "tpm": 60000,
+        "inflight": 10,
+        "slow_inflight": 3,
+        "key_idx": null,
+        "reasoning": null,
+        "strip_telemetry_note": true
+      },
+      "n_submissions": 401,
+      "prompt_hashes": {
+        "policy_benign": "dbd3ff51a4fb3457c2d347a5daea487bae7337a80ef9c056295b9859639a6611",
+        "policy_attack": "2b594e464648e13053b39ed379c48dbbb9512a182bfbc0e4d417bb5117df7077",
+        "policy_polish": "01c8429189b4079393d897200c90b791788554c5cbda959e6480e5fde2fb2bbb",
+        "monitor_blind": "e654e60504638c7f3ca71633b1f55d531ccc14ad80f02527e899706e06a68fed",
+        "monitor_told": "bc8df7bb414596e6309a7eb8ec0d879af7d19f6d86a27fc69f810aad12561f28",
+        "paraphrase": "3080a7e75b8f13de2e34bbb34119aab287738502d867797c90d09f746a59ae03"
+      },
+      "bank": [
+        "bank_cheap3_v2",
+        "bank_rest4"
+      ]
+    }
+  ]
+}
