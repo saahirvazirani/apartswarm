@@ -6,9 +6,9 @@ STAGE1C := $(wildcard runs/stage1c_*/scores.jsonl)
 RAW := $(wildcard runs/stage1raw_*/scores.jsonl)
 BANKS := runs/bank_cheap3_v2 runs/bank_rest4
 
-.PHONY: recompute hashes banks full robustness figure excerpts told para raw strengthen control matched reasons para-ds budget
+.PHONY: recompute hashes banks full robustness figure excerpts told para raw strengthen control matched reasons para-ds committee mech familiarity budget
 
-recompute: hashes banks full robustness figure excerpts told para raw strengthen control matched reasons para-ds budget
+recompute: hashes banks full robustness figure excerpts told para raw strengthen control matched reasons para-ds committee mech familiarity budget
 
 hashes:
 	$(PY) -c "import json,hashlib,pathlib; h=json.load(open('prompts/HASHES.json')); \
@@ -59,6 +59,15 @@ reasons:
 
 para-ds:
 	@if [ -f runs/stage1e_ds/scores.jsonl ]; then $(PY) analysis/deltas.py para --orig $(STAGE1) --para runs/stage1e_ds/scores.jsonl --out analysis/out/para_ds > /dev/null && echo "para_ds (deepseek paraphraser control) -> analysis/out/para_ds/deltas.md"; fi
+
+committee:
+	@$(PY) analysis/committee.py 2>/dev/null > /dev/null && echo "committee -> analysis/out/committee/fig4_deployment.png" || echo "committee: FAILED"
+
+mech:
+	@$(PY) analysis/mechanism_fig.py 2>/dev/null > /dev/null && echo "mechanism chain -> analysis/out/mech/fig5_mechanism.png" || echo "mech: FAILED"
+
+familiarity:
+	@$(PY) analysis/familiarity.py 2>/dev/null > /dev/null && echo "familiarity -> analysis/out/familiarity/familiarity.md" || echo "familiarity: FAILED"
 
 human-anchor:
 	@if [ -f runs/human_anchor/LABELS.csv ]; then $(PY) analysis/human_anchor.py --packet runs/human_anchor --scores $(STAGE1) runs/stage1_logic/scores.jsonl 2>/dev/null || echo "human_anchor: labels not filled yet"; fi

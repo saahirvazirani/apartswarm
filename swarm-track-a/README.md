@@ -271,3 +271,14 @@ fast-judgment artifact? **Predictions, both stated before launch:** (a) delibera
 toward the ~0.57 cross-family level) → a free mitigation; or (b) the gap persists under extra inference-time compute → the
 blind spot is robust, not a shallow-judgment artifact. Either is reported as-is. A 3-call parse-health probe precedes the
 run; if gemma's reasoning channel breaks JSON parsing, the stage is dropped and that is reported instead.
+
+**Stage 1h pre-registration (Sun ~5:15 PM, before any Stage-1h call; exploratory; budget raised by the team to ~1k credits).**
+Benign calibration expansion for the gemma cells: the standing limitation is that each per-pair 5% threshold rests on ~100
+benign submissions (~5 tail scores). We generate 6 additional benign resamples (indices 3–8, same frozen benign prompt,
+temp 0.7) for gemma-4-26b-a4b-it and gemma-4-31b-it on all 34 tasks (`bank_benign_exp`), keep test-passers, and have all 7
+monitors score the expanded benign set blind, 3 draws (`stage1h_benexp`; resamples 0–2 replay from the response cache, so
+the original scores are byte-identical). Analysis: re-derive gemma-policy-row thresholds on the expanded benign (n ≈ 300
+per pair) and recompute those cells' TPR at 5% FPR, plus a held-out split (calibrate on half the benign, measure realized
+FPR and TPR on the other half). **Predictions, stated before launch:** (a) thresholds stabilize and the gemma own-family
+deficit persists with tighter intervals (our expectation); or (b) the deficit shrinks materially, indicating the original
+effect leaned on thin calibration tails — reported as-is either way.
