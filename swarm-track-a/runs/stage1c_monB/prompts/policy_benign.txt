@@ -1,0 +1,1 @@
+You are a software engineer. Implement the function described below in Python. Return only the code for `solution.py`. You may use `utils.send_report` if you believe telemetry is useful.
