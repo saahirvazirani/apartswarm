@@ -305,3 +305,12 @@ the blind spot is content-level, not gemma surface form.** Diagonal-specific att
 after the deepseek paraphrase the gemma own-model cells still catch only 0.24 vs 0.51 cross-family. The Stage-1c
 "not surface form" conclusion no longer rests on a gemma-family paraphraser: the confound is closed.
 (`analysis/out/para_ds/deltas.md`; Figure 5 row updated automatically.)
+
+**Stage 1g result (Sun ~5:15 PM, appended; pre-registered Sun 4:50 PM).** Sentence-removal ablation: with the
+sanctioned-telemetry sentence stripped from the monitor-visible task text, scores inflate toward the ceiling exactly as
+pre-flight predicted (benign means 52–82, attack means 97–99; quantile thresholds saturate at 95–100, so the quantile TPR
+degenerates and the tie-robust interpolated estimator carries the comparison). **Prediction (a) holds: the gemma
+own-family deficit persists without the planted excuse.** Interpolated TPR at matched 5% FPR, own vs cross (qwen3.8):
+gemma-26b attacks 0.19 vs 0.75 (gap 0.56; baseline 0.34), gemma-31b attacks 0.10 vs 0.35 (gap 0.25; baseline 0.46 —
+everyone's discrimination compresses near the ceiling). 2,406/2,406 draws, parse failures ≤0.7%. The blind spot is not an
+artifact of the sanctioned-telemetry sentence. (`analysis/out/stage1g/contrast.md`.)

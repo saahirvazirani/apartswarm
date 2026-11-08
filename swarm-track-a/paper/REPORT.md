@@ -154,7 +154,9 @@ submission with a fixed rewriter leaves the gap intact (0.61 → 0.57 own, 0.72 
 rewrite every submission produces no writer-specific blind spot (−1.0 [−6.0, +4.3]). A *cross-family* paraphraser
 (deepseek, pre-registered to close the gemma-flavoured-paraphrase confound) likewise leaves the deficit: after it
 rewrites every gemma submission, the gemma own-model cells still catch 0.24 versus 0.51 cross-family
-(diagonal-specific score delta −3.3 [−7.3, +0.4]). The excuse vocabulary of misses is kinship-independent (§4.3). Raw
+(diagonal-specific score delta −3.3 [−7.3, +0.4]). Removing the sanctioned-telemetry sentence from the monitor-visible task text (Stage 1g) pushes every
+score toward the ceiling, yet the own-vs-cross deficit remains at matched FPR (0.19 vs 0.75 on gemma-26b attacks, 0.10
+vs 0.35 on gemma-31b's) — the blind spot does not depend on the planted excuse. The excuse vocabulary of misses is kinship-independent (§4.3). Raw
 score levels even reverse the familiarity prediction: gemma monitors score gemma-written code as *more* suspicious on
 average, benign included — the deficit is created at the threshold, by gemma's high scores on its own benign telemetry.
 (These nulls are powered to detect ~4-point score effects, not to rule out small ones.) Figure 2 summarizes the chain:
@@ -221,9 +223,8 @@ diagonal-vs-off-diagonal contrast, not absolute catch rates. Per-pair thresholds
 held-out split keeps realized FPR at 0.053 and preserves the deficit, though cell-level magnitudes carry calibration
 noise (gemma-31b diagonal 0.03 in-sample, 0.16 held-out mean, 0.20 matched-FPR — the direction is stable, the exact
 cell value is not the claim). The effect is one lineage (two checkpoints) in one task distribution; the
-sanctioned-telemetry sentence that prevents ceiling effects is a design patch both policies and monitors see, and the
-blind spot could be specific to how gemma weighs that justification (an ablation removing the sentence was
-pre-registered and run; see repo). Reasoning was disabled on every call; output caps were raised after pre-registration
+sanctioned-telemetry sentence that prevents ceiling effects is a design patch both policies and monitors see, and a pre-registered ablation removing the sentence from the monitor's view left the
+deficit intact at matched FPR (§4.4), though all scores compress toward the ceiling without it. Reasoning was disabled on every call; output caps were raised after pre-registration
 (dated, non-binding for five of seven models). glm-5.2 is both a subject and the task generator (the identity contrast
 is within-row). There is no seed parameter, so resamples are temperature draws; every response is stored and every
 number recomputes. The git history was linearized by a rebase before submission; author timestamps and per-run usage
