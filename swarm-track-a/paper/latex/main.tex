@@ -134,7 +134,10 @@ on itself. A post-hoc gemma-block decomposition (\codefile{catch $\sim$ policy +
 diag\_nongemma + samefam\_nongemma}, task-clustered) makes the headline inferential: the gemma-policy $\times$
 gemma-monitor block has OR \gap{0.29 [0.19, 0.45]} ($p = 3.8\times10^{-8}$, surviving any correction over the seven
 per-monitor comparisons), while the non-gemma diagonal is a precise null (OR 1.08 [0.78, 1.47], $p = 0.65$). Under
-matched FPR the pooled diagonal$-$cross gap is $-0.080$ $[-0.152, -0.003]$.
+matched FPR the pooled diagonal$-$cross gap is $-0.080$ $[-0.152, -0.003]$. The effect also survives held-out
+calibration: with thresholds set on half the benign tasks and FPR measured on the other half, realized FPR stays at
+0.053 against the nominal 0.05 and the pooled cross-minus-diagonal gap is 0.110 [0.005, 0.187] over 200 splits
+(gemma-31b own-cell 0.16 vs 0.71 cross).
 
 \begin{figure}[t]
   \centering
@@ -223,8 +226,10 @@ Limitations rather than omitting it.
 
 \section{Limitations and Dual-Use / Ethical Considerations}
 The side objectives are inert and instructed, and leniency is uninstructed and blind --- the claim is the
-diagonal-vs-off-diagonal contrast, not the absolute catch rates. Per-pair thresholds rest on $\sim$5 benign tail scores
-and there is no held-out calibration set; the most dramatic diagonal number (gemma-31b 0.03) is a
+diagonal-vs-off-diagonal contrast, not the absolute catch rates. Per-pair thresholds rest on $\sim$5 benign tail scores; a
+held-out split (calibrate on half the benign tasks, evaluate on the rest) keeps realized FPR at 0.053 and preserves the
+deficit, though cell-level magnitudes carry calibration noise (gemma-31b diagonal 0.03 in-sample vs 0.16 held-out mean).
+The most dramatic diagonal number (gemma-31b 0.03) is a
 score-quantization/tie-break value --- its benign 95th percentile and many of its own attacks both land on 85, so a
 strict \codefile{>} gives 0.03 and \codefile{>=} gives 0.38; tie-robust ROC interpolation at a matched 5\% FPR gives
 0.20, the number we quote; AUROC 0.86 shows it still ranks reasonably, and the effect
@@ -273,7 +278,8 @@ each paper number to a run folder and a command. Per-pair TPR/AUROC matrices wit
 \codefile{analysis/out/full/matrix.md}. Two-way fit, permutation, bootstrap, leave-one-family-out, drop-one-cell:
 \codefile{fit.md}, \codefile{robustness.md}. Residuals, FPR sweep, hard negatives, reasons, per-task, draw agreement:
 \codefile{analysis/out/strengthen/}. Matched-FPR (tie-robust) matrices and the gemma-block GLM:
-\codefile{analysis/out/matched/}. Reason-text classification of all misses with verbatim
+\codefile{analysis/out/matched/}. Held-out calibration, committee, mechanism chain, familiarity:
+\codefile{analysis/out/\{heldout,committee,mech,familiarity\}/}. Reason-text classification of all misses with verbatim
 disagreement pairs: \codefile{analysis/out/reasons/}. Control view and calibration-free checks: \codefile{analysis/out/control/}.
 Second attack class: \codefile{analysis/out/logic/}. Pre-polish bank: \codefile{analysis/out/raw/}. Told-vs-blind and
 paraphrase deltas: \codefile{analysis/out/told/}, \codefile{analysis/out/para/}. Two contrasting transcript excerpts

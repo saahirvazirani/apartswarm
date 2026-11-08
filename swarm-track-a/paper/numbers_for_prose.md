@@ -47,7 +47,9 @@ DO NOT use numbers from chat logs or earlier drafts — several changed when the
 - Stage 1f reasoning-on probe: `runs/stage1f_reason/` (gemma-31b, reasoning=medium).
 - Stage 1g sentence-removal ablation: `runs/stage1g_nonote/`.
 - Stage 1h benign calibration expansion: `runs/stage1h_benexp/` (n≈300 benign per gemma cell).
-- Held-out calibration split: `analysis/out/heldout/heldout.md`.
+- Held-out calibration split: DONE (`analysis/out/heldout/heldout.md`): realized FPR 0.053 vs nominal 0.05 (worst
+  cell 0.070); pooled cross−diagonal gap 0.110 [0.005, 0.187] over 200 task-level splits; gemma-31b own 0.16 vs 0.71
+  cross held-out. Mean per-cell |Δ| vs full-sample 0.036. Intervals are split-variability only (fixed attack set).
 - Contingency sentence if any is unfinished at freeze: "Stage 1x was pre-registered (RUN_INDEX, <time>) and was still
   running at the submission freeze; partial data are included in the repo and not interpreted here."
 - Human anchor: if `runs/human_anchor/LABELS.csv` is unfilled at freeze, the Limitations sentence is: "The human-anchor

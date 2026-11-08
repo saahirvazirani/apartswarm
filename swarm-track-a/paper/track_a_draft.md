@@ -122,7 +122,9 @@ gemma-block decomposition (`catch ~ policy + monitor + gemma_block + diag_nongem
 `analysis/out/matched/block_fit.md`) makes the headline inferential: the gemma-policy × gemma-monitor block has OR
 **0.29 [0.19, 0.45]** (p = 3.8e-8, surviving any correction over the seven per-monitor comparisons), while the non-gemma
 diagonal is a precise null (OR 1.08 [0.78, 1.47], p = 0.65). Under matched FPR the pooled diagonal−cross gap is −0.080
-[−0.152, −0.003].
+[−0.152, −0.003]. The effect also survives held-out calibration (`analysis/out/heldout/`): with thresholds
+set on half the benign tasks and FPR measured on the other half, realized FPR stays at 0.053 against the nominal 0.05 and
+the pooled cross-minus-diagonal gap is 0.110 [0.005, 0.187] over 200 splits (gemma-31b own-cell 0.16 vs 0.71 cross).
 
 *Figure 2 (`analysis/out/strengthen/fig2_residuals.png`): cell TPR minus the additive policy+monitor fit, and the own-model
 residual per monitor with intervals.*
@@ -197,7 +199,7 @@ explicitly refuses the covert objective in 18% of attempts after visible deliber
 
 Drawn from `docs/limitations_draft.md` (full list there). Key points: the side objectives are inert and instructed, and
 leniency is uninstructed and blind — the claim is the diagonal-vs-off-diagonal contrast, not the absolute catch rates.
-Per-pair thresholds rest on ~5 benign tail scores and there is no held-out calibration set; the most dramatic diagonal number
+Per-pair thresholds rest on ~5 benign tail scores; a held-out split (calibrate on half the benign tasks, evaluate on the other half, `analysis/out/heldout/`) keeps realized FPR at 0.053 and preserves the deficit, though cell-level magnitudes carry real calibration noise (gemma-31b diagonal 0.03 in-sample vs 0.16 held-out mean). The most dramatic diagonal number
 (gemma-31b 0.03) is a score-quantization/tie-break value — its benign-95th-percentile and many of its own attacks both land on
 85, so a strict `>` gives 0.03 and `>=` gives 0.38; tie-robust ROC interpolation at a matched 5% FPR gives 0.20, the number we
 quote (`analysis/out/full/tie_break_note.md`, `analysis/out/matched/`); AUROC 0.86 shows it still ranks
@@ -238,6 +240,7 @@ Wataoka et al. 2024 (perplexity account of self-preference).
 - Two-way fit, permutation, bootstrap, leave-one-family-out, drop-one-cell: `analysis/out/full/fit.md`, `robustness.md`.
 - Robustness (residuals, FPR sweep, hard negatives, reasons, per-task, draws): `analysis/out/strengthen/strengthen.md`.
 - Matched-FPR (tie-robust) matrices and the gemma-block GLM: `analysis/out/matched/matched.md`, `block_fit.md`.
+- Held-out calibration split, committee/deployment, mechanism chain, familiarity: `analysis/out/{heldout,committee,mech,familiarity}/`.
 - Reason-text classification of all misses + verbatim disagreement pairs: `analysis/out/reasons/reasons.md`.
 - Control view and calibration-free checks: `analysis/out/control/control.md`.
 - Second attack type: `analysis/out/logic/logic.md`. Pre-polish appendix: `analysis/out/raw/matrix.md`.

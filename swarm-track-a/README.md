@@ -290,3 +290,10 @@ computed on a matrix contaminated by 6 logic-attack submissions (row n's summed 
 same-model 0.584 [0.540, 0.630] vs cross-family 0.718 [0.675, 0.762], gap −0.134 [−0.168, −0.100]; `same_model` log-odds
 −0.56, OR 0.57 [0.47, 0.70], p = 2.6e-8; `same_family_diff_model` OR 0.74 [0.61, 0.90]. The 1:15 AM paragraph was correct
 as written; quote it. Fix and affected-output regeneration recorded in `RUN_INDEX.md` (Sun 4:45 PM row).
+
+**Held-out calibration (Sun ~5:40 PM, post-hoc, appended).** Thresholds calibrated on a random half of the benign tasks
+and evaluated on the other half (200 splits, `analysis/out/heldout/`): mean realized FPR 0.053 vs nominal 0.05 (worst cell
+0.070); the gemma own-family deficit survives (gemma-26b 0.37 under gemma monitors vs 0.83 cross; gemma-31b 0.18 vs 0.71;
+pooled cross−diagonal 0.110 [0.005, 0.187] over splits). Held-out TPRs track the full matrix (mean |Δ| 0.036), so
+in-sample calibration was not inflating the headline; the gemma-31b diagonal magnitude carries real calibration noise
+(0.03 in-sample vs 0.16 held-out mean) — the direction is stable, the exact cell value is not the claim.

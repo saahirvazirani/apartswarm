@@ -6,9 +6,9 @@ STAGE1C := $(wildcard runs/stage1c_*/scores.jsonl)
 RAW := $(wildcard runs/stage1raw_*/scores.jsonl)
 BANKS := runs/bank_cheap3_v2 runs/bank_rest4
 
-.PHONY: recompute hashes banks full robustness figure excerpts told para raw strengthen control matched reasons para-ds committee mech familiarity budget
+.PHONY: recompute hashes banks full robustness figure excerpts told para raw strengthen control matched reasons para-ds committee mech familiarity heldout budget
 
-recompute: hashes banks full robustness figure excerpts told para raw strengthen control matched reasons para-ds committee mech familiarity budget
+recompute: hashes banks full robustness figure excerpts told para raw strengthen control matched reasons para-ds committee mech familiarity heldout budget
 
 hashes:
 	$(PY) -c "import json,hashlib,pathlib; h=json.load(open('prompts/HASHES.json')); \
@@ -59,6 +59,9 @@ reasons:
 
 para-ds:
 	@if [ -f runs/stage1e_ds/scores.jsonl ]; then $(PY) analysis/deltas.py para --orig $(STAGE1) --para runs/stage1e_ds/scores.jsonl --out analysis/out/para_ds > /dev/null && echo "para_ds (deepseek paraphraser control) -> analysis/out/para_ds/deltas.md"; fi
+
+heldout:
+	@$(PY) analysis/heldout.py 2>/dev/null > /dev/null && echo "held-out calibration -> analysis/out/heldout/heldout.md" || echo "heldout: FAILED"
 
 committee:
 	@$(PY) analysis/committee.py 2>/dev/null > /dev/null && echo "committee -> analysis/out/committee/fig4_deployment.png" || echo "committee: FAILED"
