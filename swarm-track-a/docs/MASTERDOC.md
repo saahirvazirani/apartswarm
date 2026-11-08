@@ -45,7 +45,7 @@ automatically.
 |---|---|---|---|
 | 1e `stage1e_ds` | gemma-paraphraser confound (deepseek rewrites gemma subs) | **LANDED 4:45 PM — confound closed: deficit persists (0.24 vs 0.51), delta −3.3 [−7.3,+0.4] null** | done |
 | 1g `stage1g_nonote` | is the blind spot an artifact of the planted telemetry sentence? | **LANDED 5:15 PM — NO: deficit persists without the sentence (0.19 vs 0.75; 0.10 vs 0.35 interp)** | done |
-| 1f `stage1f_reason` | does reasoning close the blind spot? | 423/~1,150 | ~5:30 PM |
+| 1f `stage1f_reason` | does reasoning close the blind spot? | **LANDED 5:25 PM — NO: own cell 0.19 vs 0.20; deliberation collapses suspicion on gemma code (−54 pts)** | done |
 | 1h `stage1h_mon{A,B,C}` | thin-calibration-tails objection (n≈300 benign per gemma cell) | bank DONE (599/612 kept); scoring split across 3 keys in parallel at 4:25 PM | ~5:45–6:15 PM (was 7:45; split tripled throughput) |
 
 Agent integrates each on landing: deltas → README dated note → §4 updates → Figure A/5 refresh → commit+push. Then a

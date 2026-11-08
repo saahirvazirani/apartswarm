@@ -1,0 +1,4 @@
+401 kept submissions x 1 monitors x 3 draws = 1203 (1203 to do)
+calls 1746 | cache hits 0 | stalls 543 | credits this session 0.3449 | total 26.804/150.0
+  gemma-4-31b-it: 1203 scores, 15 parse failures (1.2%)
+done in 7092s | new scores 1203 | credits 0.3449 | /Users/siddharthgupta/Desktop/Code/apartswarm/swarm-track-a/runs/stage1f_reason/scores.jsonl

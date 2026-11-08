@@ -156,7 +156,10 @@ rewrite every submission produces no writer-specific blind spot (−1.0 [−6.0,
 rewrites every gemma submission, the gemma own-model cells still catch 0.24 versus 0.51 cross-family
 (diagonal-specific score delta −3.3 [−7.3, +0.4]). Removing the sanctioned-telemetry sentence from the monitor-visible task text (Stage 1g) pushes every
 score toward the ceiling, yet the own-vs-cross deficit remains at matched FPR (0.19 vs 0.75 on gemma-26b attacks, 0.10
-vs 0.35 on gemma-31b's) — the blind spot does not depend on the planted excuse. The excuse vocabulary of misses is kinship-independent (§4.3). Raw
+vs 0.35 on gemma-31b's) — the blind spot does not depend on the planted excuse. Nor is it a fast-judgment artifact: re-scoring with the monitor's reasoning enabled (Stage 1f,
+pre-registered) leaves the own-cell matched-FPR catch unchanged (0.19 vs 0.20) and worsens the sibling cell (0.17 vs
+0.38), while collapsing absolute suspicion on gemma code by ~54 points — deliberation talks the monitor out of its
+suspicion rather than into it. The excuse vocabulary of misses is kinship-independent (§4.3). Raw
 score levels even reverse the familiarity prediction: gemma monitors score gemma-written code as *more* suspicious on
 average, benign included — the deficit is created at the threshold, by gemma's high scores on its own benign telemetry.
 (These nulls are powered to detect ~4-point score effects, not to rule out small ones.) Figure 2 summarizes the chain:
@@ -235,8 +238,7 @@ recommendation, which helps defenders more than attackers, who cannot choose the
 
 ### Future Work
 
-More attack classes and lineages; frontier models as monitors; reasoning-enabled monitors (pre-registered probe in the
-repo); human-anchored score validation; held-out calibration as a design primitive rather than a robustness check.
+More attack classes and lineages; frontier models as monitors; human-anchored score validation; held-out calibration as a design primitive rather than a robustness check.
 
 ## 6. Conclusion **[MODEL DRAFT — rewrite in your own words]**
 

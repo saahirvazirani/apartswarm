@@ -314,3 +314,11 @@ own-family deficit persists without the planted excuse.** Interpolated TPR at ma
 gemma-26b attacks 0.19 vs 0.75 (gap 0.56; baseline 0.34), gemma-31b attacks 0.10 vs 0.35 (gap 0.25; baseline 0.46 —
 everyone's discrimination compresses near the ceiling). 2,406/2,406 draws, parse failures ≤0.7%. The blind spot is not an
 artifact of the sanctioned-telemetry sentence. (`analysis/out/stage1g/contrast.md`.)
+
+**Stage 1f result (Sun ~5:25 PM, appended; pre-registered Sun ~4:30 PM).** Reasoning-on probe: gemma-4-31b-it re-scored
+every kept gemma submission with reasoning effort raised (prompt byte-identical; 1,202/1,203 draws, 1.2% parse failures).
+**Prediction (b) holds: deliberation does not close the blind spot.** At matched 5% FPR the own-model cell is 0.19 with
+reasoning vs 0.20 without; the same-family cell worsens (0.17 vs 0.38). Absolute suspicion on gemma-written code collapses
+under reasoning (attack means 58.9 → 4.1, benign 16.7 → 1.0; thresholds fall to 0), so the deficit is not a fast-judgment
+artifact and extra inference-time compute is not a mitigation here — if anything deliberation talks the monitor out of its
+suspicion on this code. (`analysis/out/stage1f/contrast.md`.)
