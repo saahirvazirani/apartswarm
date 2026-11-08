@@ -1,2 +1,4 @@
 [chain A2 00:40:07] waiting for stage1_monC
 [chain A2 01:06:27] stage1b_monA (told, 10 tasks; A+C monitors)
+[chain A2 01:33:03] waiting for paraphrase bank
+[chain A2 01:33:03] stage1c_monA (paraphrased; diagonal + cross-family; A+C monitors)
