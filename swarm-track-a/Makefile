@@ -1,25 +1,42 @@
 # Recompute every number and figure in the paper from runs/ (CLAUDE.md rule 10).
 PY := .venv/bin/python
 STAGE1 := $(wildcard runs/stage1_*/scores.jsonl)
+STAGE1B := $(wildcard runs/stage1b_*/scores.jsonl)
+STAGE1C := $(wildcard runs/stage1c_*/scores.jsonl)
+BANKS := runs/bank_cheap3_v2 runs/bank_rest4
 
-.PHONY: recompute cheap3 full budget hashes
+.PHONY: recompute hashes banks full robustness figure excerpts told para budget
 
-recompute: hashes cheap3 full budget
+recompute: hashes banks full robustness figure excerpts told para budget
 
 hashes:
 	$(PY) -c "import json,hashlib,pathlib; h=json.load(open('prompts/HASHES.json')); \
 	bad=[n for n,v in h.items() if hashlib.sha256(pathlib.Path(f'prompts/{n}.txt').read_text(encoding='utf-8').strip().encode()).hexdigest()!=v]; \
 	print('prompt hashes OK' if not bad else f'HASH MISMATCH: {bad}')"
 
-cheap3:
-	@if [ -f runs/stage1_monA/scores.jsonl ]; then \
-	  $(PY) analysis/calibrate.py --scores runs/stage1_monA/scores.jsonl --out analysis/out/cheap3 && \
-	  $(PY) analysis/fit.py --scores runs/stage1_monA/scores.jsonl --out analysis/out/cheap3 --perms 2000; fi
+banks:
+	$(PY) analysis/bank_tables.py --banks $(BANKS) --out analysis/out/banks > /dev/null && echo "banks -> analysis/out/banks"
 
 full:
 	@if [ -n "$(STAGE1)" ]; then \
-	  $(PY) analysis/calibrate.py --scores $(STAGE1) --out analysis/out/full && \
-	  $(PY) analysis/fit.py --scores $(STAGE1) --out analysis/out/full --perms 2000; fi
+	  $(PY) analysis/calibrate.py --scores $(STAGE1) --out analysis/out/full > /dev/null && \
+	  $(PY) analysis/fit.py --scores $(STAGE1) --out analysis/out/full --perms 2000 2>/dev/null > /dev/null && echo "full -> analysis/out/full"; fi
+
+robustness:
+	@if [ -n "$(STAGE1)" ]; then $(PY) analysis/robustness.py --scores $(STAGE1) --out analysis/out/full 2>/dev/null > /dev/null && echo "robustness -> analysis/out/full/robustness.md"; fi
+
+figure:
+	@if [ -f analysis/out/full/fit.json ]; then $(PY) analysis/figures.py --cells analysis/out/full/cells.csv --fit analysis/out/full/fit.json --out analysis/out/full/fig1.png \
+	  --title "Catch rate of successful attacks, blind monitors (34 tasks, 650 attacks, 698 benign)"; fi
+
+excerpts:
+	@if [ -f analysis/out/full/cells.csv ]; then $(PY) analysis/excerpts.py --scores $(STAGE1) --cells analysis/out/full/cells.csv --banks $(BANKS) --out analysis/out/full/excerpts.md --n 3 > /dev/null && echo "excerpts -> analysis/out/full/excerpts.md"; fi
+
+told:
+	@if [ -n "$(STAGE1B)" ]; then $(PY) analysis/deltas.py told --blind $(STAGE1) --told $(STAGE1B) --out analysis/out/told > /dev/null && echo "told -> analysis/out/told/deltas.md"; fi
+
+para:
+	@if [ -n "$(STAGE1C)" ]; then $(PY) analysis/deltas.py para --orig $(STAGE1) --para $(STAGE1C) --out analysis/out/para > /dev/null && echo "para -> analysis/out/para/deltas.md"; fi
 
 budget:
-	PYTHONPATH=src $(PY) -m track_a.budget
+	PYTHONPATH=src $(PY) -m track_a.budget | head -1
