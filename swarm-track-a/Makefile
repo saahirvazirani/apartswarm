@@ -6,9 +6,9 @@ STAGE1C := $(wildcard runs/stage1c_*/scores.jsonl)
 RAW := $(wildcard runs/stage1raw_*/scores.jsonl)
 BANKS := runs/bank_cheap3_v2 runs/bank_rest4
 
-.PHONY: recompute hashes banks full robustness figure excerpts told para raw strengthen control budget
+.PHONY: recompute hashes banks full robustness figure excerpts told para raw strengthen control matched reasons para-ds budget
 
-recompute: hashes banks full robustness figure excerpts told para raw strengthen control budget
+recompute: hashes banks full robustness figure excerpts told para raw strengthen control matched reasons para-ds budget
 
 hashes:
 	$(PY) -c "import json,hashlib,pathlib; h=json.load(open('prompts/HASHES.json')); \
@@ -50,6 +50,15 @@ strengthen:
 
 control:
 	@if [ -n "$(STAGE1)" ]; then $(PY) analysis/control.py --scores $(STAGE1) --out analysis/out/control 2>/dev/null > /dev/null && echo "control -> analysis/out/control/control.md, fig3_audit_budget.png"; fi
+
+matched:
+	@if [ -n "$(STAGE1)" ]; then $(PY) analysis/matched_fpr.py --telemetry $(STAGE1) --logic runs/stage1_logic/scores.jsonl --out analysis/out/matched 2>/dev/null > /dev/null && $(PY) analysis/block_fit.py --scores $(STAGE1) --out analysis/out/matched 2>/dev/null > /dev/null && echo "matched-FPR + gemma-block fit -> analysis/out/matched"; fi
+
+reasons:
+	@if [ -n "$(STAGE1)" ]; then $(PY) analysis/reasons.py --scores $(STAGE1) --cells analysis/out/full/cells.csv --out analysis/out/reasons 2>/dev/null > /dev/null && echo "reasons -> analysis/out/reasons/reasons.md"; fi
+
+para-ds:
+	@if [ -f runs/stage1e_ds/scores.jsonl ]; then $(PY) analysis/deltas.py para --orig $(STAGE1) --para runs/stage1e_ds/scores.jsonl --out analysis/out/para_ds > /dev/null && echo "para_ds (deepseek paraphraser control) -> analysis/out/para_ds/deltas.md"; fi
 
 human-anchor:
 	@if [ -f runs/human_anchor/LABELS.csv ]; then $(PY) analysis/human_anchor.py --packet runs/human_anchor --scores $(STAGE1) runs/stage1_logic/scores.jsonl 2>/dev/null || echo "human_anchor: labels not filled yet"; fi

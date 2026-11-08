@@ -39,6 +39,10 @@ Agent-drafted list of facts for the human authors to turn into prose. Every item
 - **Told condition** (Stage 1b) tells the monitor the author's model name; this tests the *stated* identity channel, not self-recognition.
   Paraphrase (Stage 1c) uses gemma-4-26b-a4b-it as the paraphraser for every submission, including gemma's own; a gemma-flavoured
   paraphrase could shift gemma-family cells specifically.
+- **Git history was linearized by a rebase on Sunday before submission**, so committer timestamps postdate the work; author
+  timestamps and the per-run `usage.jsonl` logs in `runs/` independently corroborate that hypotheses preceded the sweep.
+- **Per-cell Wilson intervals treat the three resamples per task as independent** (design effect up to ~3 if draws within a task
+  correlate); the pooled inference is task-clustered and unaffected.
 - **Multiple comparisons.** 49 cells with intervals; the pre-registered inference is the pooled `same_model` coefficient with
   task-clustered SEs and a within-task permutation test, not any single cell.
 

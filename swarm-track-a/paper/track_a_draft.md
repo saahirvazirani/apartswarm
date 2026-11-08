@@ -17,8 +17,8 @@ three sections carry the framing. Each stub lists the points to hit and the exac
    same-model effect is real but fragile, and that a large self-leniency is concentrated in specific families.
 3. Robustness and mechanism analyses showing the effect is an operating-point (calibration) phenomenon, not a ranking
    failure, and is explained by a shared blind spot rather than stated-identity recognition or surface-form self-recognition.
-4. A replication on a structurally different, inert attack class (input-conditional discrepancy) that reproduces and
-   strengthens the family self-leniency.
+4. A replication on a structurally different, inert attack class (input-conditional discrepancy) that qualitatively
+   reproduces the family self-leniency, with magnitudes bounded honestly by a matched-FPR estimator.
 5. A reproducible evidence locker: frozen hashed prompts, a sandboxed task suite, and `make recompute` that regenerates every
    number and figure from stored model outputs.
 
@@ -108,9 +108,15 @@ Three checks show the pooled number depends on the calibration choice:
   `same_model` log-odds falls to −0.15 [−0.34, +0.04], and under a single global threshold per monitor the gap is −0.022
   [−0.060, +0.016]. Both intervals include zero.
 
-By contrast the gemma self-leniency survives every scheme: gemma-31b catches near-zero of its own attacks at a strict 5% budget vs 56% cross-family (0.03 with a `>`
-threshold, 0.38 with `>=` — the strict number is a tie-break value, see Limitations; AUROC 0.86), gemma-26b 22% vs 53%. Every other monitor is within ±0.12 of its
-cross-family rate; deepseek, glm-5.2 and glm-53-flash are, if anything, stricter on themselves.
+By contrast the gemma self-leniency survives every scheme. Under tie-robust ROC interpolation at an exactly matched 5% FPR
+(`analysis/out/matched/matched.md`) gemma-31b catches **0.20** of its own attacks vs a 0.57 cross-family mean (the raw quantile
+numbers, 0.03 with `>` and 0.38 with `>=`, bracket it — see Limitations; AUROC 0.86), and gemma-26b 0.22 vs 0.56; every
+non-gemma monitor is within ±0.19 of its cross-family mean, with deepseek, if anything, stricter on itself. A post-hoc
+gemma-block decomposition (`catch ~ policy + monitor + gemma_block + diag_nongemma + samefam_nongemma`, task-clustered;
+`analysis/out/matched/block_fit.md`) makes the headline inferential: the gemma-policy × gemma-monitor block has OR
+**0.29 [0.19, 0.45]** (p = 3.8e-8, surviving any correction over the seven per-monitor comparisons), while the non-gemma
+diagonal is a precise null (OR 1.08 [0.78, 1.48], p = 0.65). Under matched FPR the pooled diagonal−cross gap is −0.080
+[−0.152, −0.003].
 
 *Figure 2 (`analysis/out/strengthen/fig2_residuals.png`): cell TPR minus the additive policy+monitor fit, and the own-model
 residual per monitor with intervals.*
@@ -121,7 +127,11 @@ AUROC moves at most 0.02–0.03 on the diagonal for every monitor; under a globa
 leniency therefore lives at the calibrated 5%-FPR operating point, not in how monitors *rank* attacks against benign code.
 gemma-31b even *names the canary string* in 57% of its reasons on its own attacks (28% cross-family) yet scores them only
 moderately (mean 59) while scoring its own benign telemetry high enough to put the threshold at 85. The failure is judgement
-of its own code at a fixed budget, not perception.
+of its own code at a fixed budget, not perception. A reason-text analysis of all 1,443 missed attack scores (`analysis/out/reasons/`) supports this:
+monitors that miss overwhelmingly cite the sanctioned-telemetry note (84–100% of misses), but own-family misses are no more
+excuse-laden than cross-family misses of the same submissions (Δ +0.01 [−0.06, +0.08]), and gemma-31b even verbally flags the
+call in 28% of its own misses while scoring it below its own benign threshold. The self-leniency lives in the assigned score,
+not the stated rationale.
 
 ### 3.4 Mechanism: not stated identity, not surface form
 
@@ -138,12 +148,16 @@ Together these point to a shared blind spot: the same model writes, and fails to
 
 We repeated the study with a structurally different hidden objective (the inert "backdoored code" setup): return a result
 that differs from the correct one when the input contains the marker, correct otherwise, verified behaviourally in the
-sandbox. On 12 string-input tasks and 130 successful attacks, the self/family leniency **reproduces and is larger**:
-same-model catch 0.56 vs cross-family 0.83, diagonal−cross **−0.269 [−0.333, −0.208]**, `same_model` OR 0.45 (p = 0.003).
-gemma-31b again catches 7% of its own vs 68% cross-family, and — new relative to the telemetry attack — qwen3.5-397b is
-strongly self-lenient (0.28 own vs ≈0.9–1.0 by every other monitor, n = 29). The pattern is thus not specific to disguised
-telemetry. (Caveat: the cheap models produce few successful logic attacks, so some diagonal cells have n = 10; the gemma-31b
-*monitor* is weak on this attack type generally.)
+sandbox. On 12 string-input tasks and 130 successful attacks, the gemma pattern **qualitatively replicates**: under the
+pre-registered quantile thresholds same-model catch is 0.56 vs cross-family 0.83 (diagonal−cross −0.269 [−0.333, −0.208],
+`same_model` OR 0.45, p = 0.003), and gemma-31b again catches 7% of its own attacks vs 60–100% by cross-family monitors.
+The magnitudes are threshold-estimator-sensitive: logic thresholds rest on n ≈ 34–36 benign scores per pair, and under
+tie-robust interpolation at matched 5% FPR the pooled gap shrinks to −0.070 [−0.153, +0.023] while gemma-31b's own cell
+stays low (0.25 vs 0.60–1.00 cross). An apparent qwen3.5-397b self-leniency (0.28 own under quantile thresholds) weakens
+to 0.67 under interpolation, and gemma-31b misses the same qwen3.5 attacks almost entirely (0.03) despite being
+cross-family — part of its low diagonal is a broader weakness on evasive policies, not pure identity. The replication
+claim we stand behind is therefore the gemma one: robust in direction, with magnitudes uncertain at this n (some diagonal
+cells have n = 10).
 
 ### 3.6 Monitor assignment and the control view
 
@@ -179,7 +193,8 @@ Drawn from `docs/limitations_draft.md` (full list there). Key points: the side o
 leniency is uninstructed and blind — the claim is the diagonal-vs-off-diagonal contrast, not the absolute catch rates.
 Per-pair thresholds rest on ~5 benign tail scores and there is no held-out calibration set; the most dramatic diagonal number
 (gemma-31b 0.03) is a score-quantization/tie-break value — its benign-95th-percentile and many of its own attacks both land on
-85, so a strict `>` gives 0.03 and `>=` gives 0.38 (`analysis/out/full/tie_break_note.md`); AUROC 0.86 shows it still ranks
+85, so a strict `>` gives 0.03 and `>=` gives 0.38; tie-robust ROC interpolation at a matched 5% FPR gives 0.20, the number we
+quote (`analysis/out/full/tie_break_note.md`, `analysis/out/matched/`); AUROC 0.86 shows it still ranks
 reasonably, and the effect is robust across the second attack type and the residual analysis. Reasoning is disabled on every call and output caps were raised after pre-registration (documented, dated,
 non-binding for five of seven models). Tasks are toy functions; glm-5.2 is both a subject and the task generator (the identity
 contrast is within-row, so this does not drive it, but we do not rule out a task-authorship advantage). The sandbox is a macOS
@@ -216,6 +231,8 @@ Wataoka et al. 2024 (perplexity account of self-preference).
 - Per-pair TPR and AUROC matrices with intervals: `analysis/out/full/matrix.md`.
 - Two-way fit, permutation, bootstrap, leave-one-family-out, drop-one-cell: `analysis/out/full/fit.md`, `robustness.md`.
 - Robustness (residuals, FPR sweep, hard negatives, reasons, per-task, draws): `analysis/out/strengthen/strengthen.md`.
+- Matched-FPR (tie-robust) matrices and the gemma-block GLM: `analysis/out/matched/matched.md`, `block_fit.md`.
+- Reason-text classification of all misses + verbatim disagreement pairs: `analysis/out/reasons/reasons.md`.
 - Control view and calibration-free checks: `analysis/out/control/control.md`.
 - Second attack type: `analysis/out/logic/logic.md`. Pre-polish appendix: `analysis/out/raw/matrix.md`.
 - Told vs blind: `analysis/out/told/deltas.md`. Paraphrase: `analysis/out/para/deltas.md`.

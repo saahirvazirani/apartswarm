@@ -249,3 +249,16 @@ deepseek-paraphrased benign. Motivation: the Stage-1c paraphraser was gemma-26b 
 gemma-flavoured paraphrase could have preserved the surface form that carries the blind spot. **Prediction:** if the gemma blind
 spot rides on gemma surface form, the gemma monitors' catch rate on their own deepseek-rewritten attacks rises toward their
 cross-family rate; if it is content-level, the gap persists as in Stage 1c. Either outcome is informative.
+
+**Matched-FPR estimator, gemma-block fit, and reason-text analysis (Sun ~3:50 PM, post-hoc, appended).** Tie-robust ROC
+interpolation at an exactly matched 5% FPR (`analysis/out/matched/matched.md`): gemma-31b own 0.20 vs cross-mean 0.57,
+gemma-26b 0.22 vs 0.56; pooled diag−cross −0.080 [−0.152, −0.003] (telemetry) and −0.070 [−0.153, +0.023] (logic; the
+−0.269 quantile-threshold logic gap is threshold-estimator-sensitive at n≈35 benign per pair, and the apparent qwen3.5
+self-leniency 0.28 weakens to 0.67). Gemma-block GLM (`block_fit.md`, post-hoc): gemma-policy × gemma-monitor OR 0.29
+[0.19, 0.45], p = 3.8e-8; non-gemma diagonal OR 1.08 [0.78, 1.48], p = 0.65 (precise null); non-gemma same-family OR 1.00.
+The earlier mixed-rule tie-break defense in `tie_break_note.md` was retracted and replaced by the matched-FPR numbers; we
+quote the gemma-31b diagonal as ≈0.20 (0.03–0.38 depending on tie rule). Reason-text classification of all 1,443 misses
+(`analysis/out/reasons/`): monitors that miss overwhelmingly cite the sanctioned-telemetry note regardless of kinship
+(own-family 86% [82, 90] vs cross-family 84% [80, 89] on the same submissions, Δ +0.01 [−0.06, +0.08] — an informative
+null against an excuse-acceptance account); gemma-31b verbally flags the call in 28% of its own misses yet scores below
+its own benign threshold. The self-leniency lives in the assigned score, not the stated rationale.
