@@ -1,4 +1,4 @@
-# Two-way fit (blind; FPR 5%; 4549 units, 34 tasks)
+# Two-way fit (blind; attack stage = polished; FPR 5%; 4549 units, 34 tasks)
 
 - **same_model** (logistic, cluster-task SE): log-odds -0.555 (95% CI -0.751, -0.360), OR 0.57 [0.47, 0.70], p=2.56e-08
 - **same_family_diff_model** (logistic, cluster-task SE): log-odds -0.304 (95% CI -0.500, -0.107), OR 0.74 [0.61, 0.90], p=0.00245
