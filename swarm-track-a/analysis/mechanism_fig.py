@@ -38,13 +38,13 @@ OUT_ROOT = ROOT / "out"
 OUT = OUT_ROOT / "mech"
 
 # -- palette (fixed assignment: color follows the verdict category) -----------
-C_NULL = "#5b7fa6"      # grey-blue: tested, ruled out / null
-C_SURV = "#c0392b"      # red: survives
-C_PEND = "#8a8f98"      # grey: pending (hollow marker)
-INK = "#1f2430"
-INK_MUTED = "#6b7280"
-GRID = "#d8dce3"
-REF = "#9aa1ab"
+C_NULL = "#64748B"      # muted blue-gray: tested, ruled out / null
+C_SURV = "#B3324B"      # crimson: survives
+C_PEND = "#94A3B8"      # light slate: pending (hollow marker)
+INK = "#1F2937"
+INK_MUTED = "#6B7280"
+GRID = "#E5E7EB"
+REF = "#9CA3AF"
 
 NUM = r"([+-]?\d+(?:\.\d+)?)"
 TRIPLE = re.compile(NUM + r"\s*\[\s*" + NUM + r"\s*,\s*" + NUM + r"\s*\]")
@@ -127,10 +127,15 @@ def main():
     ]
 
     # ---- figure --------------------------------------------------------------
-    fig = plt.figure(figsize=(10.4, 7.6))
+    plt.rcParams.update({
+        "font.family": "sans-serif",
+        "text.color": INK,
+        "xtick.color": INK_MUTED,
+    })
+    fig = plt.figure(figsize=(7.0, 6.3), facecolor="white")
     gs = fig.add_gridspec(
-        3, 1, height_ratios=[len(panel_a), len(panel_b), 1.15],
-        hspace=0.62, left=0.315, right=0.845, top=0.855, bottom=0.075,
+        3, 1, height_ratios=[len(panel_a), len(panel_b), 1.2],
+        hspace=0.85, left=0.40, right=0.83, top=0.875, bottom=0.075,
     )
     ax_a = fig.add_subplot(gs[0])
     ax_b = fig.add_subplot(gs[1])
@@ -139,8 +144,9 @@ def main():
     def style(ax):
         for s in ("top", "right", "left"):
             ax.spines[s].set_visible(False)
-        ax.spines["bottom"].set_color(GRID)
-        ax.tick_params(axis="x", colors=INK_MUTED, labelsize=8.5, length=3)
+        ax.spines["bottom"].set_color("#CBD5E1")
+        ax.spines["bottom"].set_linewidth(0.8)
+        ax.tick_params(axis="x", colors=INK_MUTED, labelsize=9, length=3, width=0.8)
         ax.tick_params(axis="y", length=0)
         ax.xaxis.grid(True, color=GRID, lw=0.6, zorder=0)
         ax.set_axisbelow(True)
@@ -149,60 +155,68 @@ def main():
         n = len(rows)
         ys = list(range(n - 1, -1, -1))
         for y, (label, triple, verdict, color, digits) in zip(ys, rows):
+            survives = verdict == "SURVIVES"
             if triple is None:
                 # hollow pending marker at the reference line, no CI
-                ax.plot(ref, y, "o", ms=9, mfc="none", mec=C_PEND, mew=1.6, zorder=4)
-                ax.text(ref, y + 0.30, "in flight (pre-registered)",
-                        ha="center", va="bottom", fontsize=7.6,
+                ax.plot(ref, y, "o", ms=8, mfc="none", mec=C_PEND, mew=1.5, zorder=4)
+                ax.text(ref, y + 0.32, "in flight (pre-registered)",
+                        ha="center", va="bottom", fontsize=9,
                         color=INK_MUTED, style="italic")
             else:
                 est, lo, hi = triple
-                ax.plot([lo, hi], [y, y], color=color, lw=2.0,
-                        solid_capstyle="round", zorder=3)
-                for cap in (lo, hi):
-                    ax.plot([cap, cap], [y - 0.11, y + 0.11], color=color,
-                            lw=1.6, zorder=3)
-                ax.plot(est, y, "o", ms=8, mfc=color, mec="white", mew=1.1, zorder=4)
-                ax.text(est, y + 0.30, row_valstr(est, lo, hi, digits, signed),
-                        ha="center", va="bottom", fontsize=7.6, color=INK_MUTED)
-            # verdict tag, right margin
-            tag_color = C_SURV if verdict == "SURVIVES" else (
-                C_PEND if verdict == "pending" else C_NULL)
-            weight = "bold" if verdict == "SURVIVES" else "normal"
-            ax.text(1.025, y, verdict, transform=ax.get_yaxis_transform(),
-                    ha="left", va="center", fontsize=8.6, color=tag_color,
-                    fontweight=weight,
-                    bbox=dict(boxstyle="round,pad=0.28", fc="none",
-                              ec=tag_color, lw=0.9))
+                ax.errorbar(est, y, xerr=[[est - lo], [hi - est]], fmt="none",
+                            ecolor=color, alpha=0.5, elinewidth=1.6,
+                            capsize=3, capthick=1.6, zorder=3)
+                ax.plot(est, y, "o", ms=9.5 if survives else 8,
+                        mfc=color, mec="white", mew=1.1, zorder=4)
+                ax.text(est, y + 0.32, row_valstr(est, lo, hi, digits, signed),
+                        ha="center", va="bottom", fontsize=9, color=INK)
+            # verdict tag: small uppercase text, right-aligned in a fixed column
+            tag_color = C_SURV if survives else (
+                C_PEND if verdict == "pending" else INK_MUTED)
+            ax.text(1.335, y, verdict.upper(), transform=ax.get_yaxis_transform(),
+                    ha="right", va="center", fontsize=9, color=tag_color,
+                    fontweight="bold" if survives else "normal")
+            # row label: ink primary line + muted parenthetical line
+            main, _, paren = label.partition("\n")
+            tr = ax.get_yaxis_transform()
+            if paren:
+                ax.text(-0.03, y + 0.05, main, transform=tr, ha="right",
+                        va="bottom", fontsize=9.5, color=INK)
+                ax.text(-0.03, y - 0.07, paren, transform=tr, ha="right",
+                        va="top", fontsize=9, color=INK_MUTED)
+            else:
+                ax.text(-0.03, y, main, transform=tr, ha="right",
+                        va="center", fontsize=9.5, color=INK)
         ax.set_yticks(ys)
-        ax.set_yticklabels([r[0] for r in rows], fontsize=8.8, color=INK)
-        ax.set_ylim(-0.6, n - 0.25)
+        ax.set_yticklabels([])
+        ax.set_ylim(-0.6, n - 0.2)
         if log:
             ax.set_xscale("log")
-        ax.axvline(ref, color=REF, lw=1.1, ls=(0, (4, 3)), zorder=1)
-        ax.set_xlabel(xlabel, fontsize=8.5, color=INK_MUTED, labelpad=2)
-        ax.set_title(title, loc="left", fontsize=9.6, color=INK,
+        ax.axvline(ref, color=REF, lw=1.0, zorder=1)
+        ax.set_xlabel(xlabel, fontsize=8.5, color=INK_MUTED, labelpad=3)
+        ax.set_title(title, loc="left", fontsize=10.5, color=INK,
                      fontweight="bold", pad=10)
         style(ax)
 
     draw_panel(
         ax_a, panel_a,
-        "A. Score-scale tests - does the diagonal-specific suspicion shift explain it?",
-        "diagonal-specific Δ suspicion (score points, 0–100 scale); 0 = no diagonal-specific effect",
+        "Score-scale tests",
+        "diagonal-specific Δ suspicion (score points, 0–100); 0 = no effect",
     )
     ax_a.set_xlim(-8.5, 6.5)
 
     draw_panel(
         ax_b, panel_b,
-        "B. Proportion / catch-rate tests",
+        "Proportion and catch-rate tests",
         "difference (proportion / catch rate); 0 = no own-vs-cross difference",
     )
     ax_b.set_xlim(-0.21, 0.13)
 
     draw_panel(
         ax_c, panel_c,
-        "C. What survives - capability-adjusted family effect",
-        "odds ratio of catching a gemma attack inside the gemma block (log scale); 1 = no effect",
+        "What survives: capability-adjusted effect",
+        "odds ratio of catching a gemma attack in the gemma block (log scale); 1 = no effect",
         ref=1.0, log=True, signed=False,
     )
     ax_c.set_xlim(0.12, 2.6)
@@ -212,31 +226,29 @@ def main():
     ax_c.xaxis.set_minor_formatter(mticker.NullFormatter())
 
     fig.suptitle(
-        "Every surface-level account tested and ruled out; "
-        "the family blind spot survives",
-        fontsize=12.5, color=INK, fontweight="bold", x=0.5, y=0.975,
+        "Surface-level accounts ruled out; the family blind spot survives",
+        fontsize=12.5, color=INK, fontweight="bold", x=0.5, y=0.99,
     )
     fig.text(
-        0.5, 0.935,
-        "Each row: one candidate mechanism for the gemma self-leniency, point estimate with 95% CI. "
-        "Units differ by panel; every panel has its own axis and null-reference line.",
-        ha="center", fontsize=8.6, color=INK_MUTED,
+        0.5, 0.948,
+        "One candidate mechanism per row — point estimate with 95% CI; units differ by panel.",
+        ha="center", fontsize=9, color=INK_MUTED,
     )
-    handles = [
-        Line2D([], [], marker="o", color=C_NULL, lw=2, mec="white",
-               label="ruled out / null"),
-        Line2D([], [], marker="o", color=C_SURV, lw=2, mec="white",
-               label="survives"),
-    ]
-    if any(row[2] == "pending" for row in panel_a + panel_b + panel_c):  # legend entry only while a row is in flight
-        handles.append(Line2D([], [], marker="o", color="none", mfc="none", mec=C_PEND,
-                              mew=1.6, label="in flight (pre-registered)"))
-    fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.925),
-               ncol=3, frameon=False, fontsize=8.4, handletextpad=0.5,
-               columnspacing=1.6)
+    if any(row[1] is None for row in panel_a + panel_b + panel_c):  # legend only while a row is in flight
+        handles = [
+            Line2D([], [], marker="o", ls="", ms=8, mfc=C_NULL, mec="white",
+                   label="ruled out / null"),
+            Line2D([], [], marker="o", ls="", ms=8, mfc=C_SURV, mec="white",
+                   label="survives"),
+            Line2D([], [], marker="o", ls="", ms=8, mfc="none", mec=C_PEND,
+                   mew=1.5, label="in flight (pre-registered)"),
+        ]
+        fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.918),
+                   ncol=3, frameon=False, fontsize=9, handletextpad=0.5,
+                   columnspacing=1.6)
 
     png = OUT / "fig5_mechanism.png"
-    fig.savefig(png, dpi=170, facecolor="white")
+    fig.savefig(png, dpi=300, facecolor="white")
     plt.close(fig)
 
     # ---- mech.md -------------------------------------------------------------
@@ -279,7 +291,7 @@ def main():
                orr, "odds ratio", "SURVIVES",
                "analysis/out/matched/block_fit.json", signed=False),
         "",
-        f"Figure: `analysis/out/mech/fig5_mechanism.png` (dpi 170).",
+        f"Figure: `analysis/out/mech/fig5_mechanism.png` (dpi 300).",
         "",
     ]
     (OUT / "mech.md").write_text("\n".join(lines))

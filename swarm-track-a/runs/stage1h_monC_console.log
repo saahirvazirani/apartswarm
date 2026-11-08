@@ -1,0 +1,5 @@
+599 kept submissions x 2 monitors x 3 draws = 3594 (3594 to do)
+calls 5012 | cache hits 0 | stalls 1411 | credits this session 0.2593 | total 27.191/150.0
+  gemma-4-31b-it: 1797 scores, 10 parse failures (0.6%)
+  qwen3.8-27b: 1797 scores, 2 parse failures (0.1%)
+done in 7904s | new scores 3594 | credits 0.2593 | /Users/siddharthgupta/Desktop/Code/apartswarm/swarm-track-a/runs/stage1h_monC/scores.jsonl

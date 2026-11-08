@@ -12,4 +12,4 @@ Harvested verbatim by `analysis/mechanism_fig.py` from the files below (the file
 | Matched-FPR pooled diagonal - cross-family gap (telemetry) | -0.080 [-0.152, -0.003] | catch-rate (TPR at 5% FPR) | SURVIVES | `analysis/out/matched/matched.md` |
 | Gemma-block GLM (capability-adjusted) | 0.29 [0.19, 0.45] | odds ratio | SURVIVES | `analysis/out/matched/block_fit.json` |
 
-Figure: `analysis/out/mech/fig5_mechanism.png` (dpi 170).
+Figure: `analysis/out/mech/fig5_mechanism.png` (dpi 300).

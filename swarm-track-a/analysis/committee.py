@@ -204,10 +204,7 @@ def figure(singles: pd.DataFrame, comms: pd.DataFrame, best_single: pd.Series, b
     ax2.bar(x - w, [own[p] for p in MODELS], w, color="#c0392b", label="own-model monitor")
     ax2.bar(x, [best_single[p] for p in MODELS], w, color="#5d6d7e", label="best single monitor")
     ax2.bar(x + w, [best_comm[p] for p in MODELS], w, color="#1e8449", label="best 2-monitor committee (max fusion)")
-    for p, xi in zip(MODELS, x):
-        bc = comms[comms.policy == p].sort_values("tpr", ascending=False).iloc[0]
-        ax2.annotate("+".join(SHORT[m] for m in bc.members.split("+")), (xi + w, bc.tpr - 0.02),
-                     ha="center", va="top", fontsize=5.6, rotation=90, color="white")
+    # best-committee members are listed per policy in committee.md (illegible at print size in-bar)
     ax2.set_xticks(x, [SHORT[m] for m in MODELS], fontsize=7.6)
     ax2.set_xlabel("policy (attack author)")
     ax2.set_ylabel(f"catch rate at exactly {FPR:.0%} FPR")
@@ -216,14 +213,11 @@ def figure(singles: pd.DataFrame, comms: pd.DataFrame, best_single: pd.Series, b
     ax2.legend(loc="upper left", fontsize=7.4, frameon=False, ncol=1)
 
     fig.suptitle("Monitor assignment as a deployment choice: cost vs safety at a 5% audit budget",
-                 fontsize=12.5, y=1.00)
-    fig.text(0.5, -0.035,
-             "Polished telemetry attacks vs raw benign, blind monitors; catch rate = ROC-interpolated TPR at exactly 5% FPR "
-             "per (policy, monitor) pair (analysis/matched_fpr.py estimator). Cost index = input + output price in credits per 1M tokens, "
-             "a per-call index that ignores differences in tokens per review. Committees fuse two monitors by the max of their mean scores.",
-             ha="center", fontsize=7.2, color="#555")
-    fig.tight_layout(rect=(0, 0.01, 1, 0.95))
-    fig.savefig(OUT / "fig4_deployment.png", dpi=170, bbox_inches="tight")
+                 fontsize=12.5, y=1.00, color="#1F2937")
+    fig.text(0.5, 0.925, "Polished attacks vs raw benign, blind monitors; estimator and cost-index details in committee.md",
+             ha="center", fontsize=9, color="#6B7280")
+    fig.tight_layout(rect=(0, 0.01, 1, 0.9))
+    fig.savefig(OUT / "fig4_deployment.png", dpi=300, facecolor="white", bbox_inches="tight")
     plt.close(fig)
 
 

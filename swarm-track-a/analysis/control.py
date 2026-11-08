@@ -78,20 +78,29 @@ def idea1(sub: pd.DataFrame, out: Path) -> list[str]:
         rows.append(dict(policy=p, budget90_own=own, budget90_trusted=trust, budget90_bestcross=best, best_cross=best_m, ausc_own=a_own, ausc_trusted=a_tr))
     pd.DataFrame(rows).to_csv(out / "audit_budget.csv", index=False)
     # Figure 3: safety curves for the two gemma policies, own vs trusted vs a strong cross-family (qwen3.5-397b)
+    INK, MUTED, GRID = "#1F2937", "#6B7280", "#E5E7EB"
+    plt.rcParams.update({"text.color": INK, "axes.labelcolor": INK, "xtick.color": MUTED, "ytick.color": MUTED,
+                         "axes.edgecolor": MUTED, "font.size": 11})
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), sharey=True)
     for ax, p in zip(axes, ["gemma-4-26b-a4b-it", "gemma-4-31b-it"]):
-        for m, c, ls in ((p, "#c0392b", "-"), (TRUSTED, "#2980b9", "-"), ("qwen3.5-397b", "#27ae60", "--")):
+        for m, c, ls in ((p, "#B3324B", "-"), (TRUSTED, "#2563EB", "-"), ("qwen3.5-397b", "#0E9A5E", "--")):
             s = safety_curve(sub, p, m, BUDGETS)
-            ax.plot(BUDGETS * 100, s, c, ls=ls, marker="o", ms=3, label=("own: " + SHORT[m]) if m == p else SHORT[m])
-        ax.axhline(0.9, color="gray", lw=0.7, ls=":")
-        ax.set_title(f"policy {SHORT[p]}", fontsize=10)
+            ax.plot(BUDGETS * 100, s, c, ls=ls, marker="o", ms=6, lw=2.2,
+                    label=("own: " + SHORT[m]) if m == p else SHORT[m])
+        ax.axhline(0.9, color=MUTED, lw=1.0, ls=":")
+        ax.text(1.0, 0.915, "90% safety", color=INK, fontsize=9, ha="left", va="bottom")
+        ax.set_title(f"Policy {SHORT[p]}", fontsize=12, color=INK)
         ax.set_xlabel("audit budget (% of submissions)")
         ax.set_xlim(0, 50)
-        ax.legend(fontsize=8)
+        ax.grid(axis="y", color=GRID, lw=0.8)
+        ax.set_axisbelow(True)
+        for sp in ("top", "right"):
+            ax.spines[sp].set_visible(False)
+        ax.legend(fontsize=9.5, frameon=False)
     axes[0].set_ylabel("share of attacks caught (safety)")
-    fig.suptitle("Audit-budget safety for gemma-written attacks (own-model vs cheap trusted monitor)", fontsize=11)
+    fig.suptitle("Audit-budget safety for gemma-written attacks", fontsize=14, color=INK)
     fig.tight_layout()
-    fig.savefig(out / "fig3_audit_budget.png", dpi=170)
+    fig.savefig(out / "fig3_audit_budget.png", dpi=300, facecolor="white")
     plt.close(fig)
     lines += ["", f"Figure 3: `fig3_audit_budget.png`. Trusted monitor = {TRUSTED} (cheapest glm). Reading: for gemma policies the own-model "
               "monitor needs a very large audit budget to reach 90 % safety, while the cheap trusted monitor reaches it at a small budget; "
