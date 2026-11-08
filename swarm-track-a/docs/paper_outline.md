@@ -64,7 +64,16 @@ Every number below is a placeholder until `make recompute` has run on the comple
 | Pre-flight table | `runs/PREFLIGHT_SUMMARY.md` | — |
 | Credits | `make budget` | — |
 
-## Suggested framing (for the human-written abstract/discussion; agent's reading of the numbers)
+## Suggested framing (for the human-written abstract/discussion; agent's reading of the numbers) — REVISED 11:45 AM after the post-hoc checks
+
+- Headline sentence candidate: "We find no evidence of a general tendency for a model to go easy on its own code, but a large,
+  robust failure in one family: gemma monitors catch 3–22 % of gemma-written attacks versus 33–56 % from other families, under every
+  calibration we tried." The pooled 13-point gap is reported as the pre-registered primary result *with* the FPR sweep and
+  hard-negative calibration beside it, not as the headline.
+- Figure 2 (residuals after policy + monitor effects) is the picture that makes the identity-vs-capability argument; consider
+  putting it in the body next to Figure 1.
+
+### Earlier framing (before 11:45 AM; kept for the record)
 
 - The pooled answer to the title question is "yes, by 13 points at a 5 % false-positive budget", but the honest answer is
   "it depends on the family": the gemma monitors are both the weakest monitors overall and dramatically weakest on gemma-written
