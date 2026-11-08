@@ -3,11 +3,12 @@ PY := .venv/bin/python
 STAGE1 := $(wildcard runs/stage1_*/scores.jsonl)
 STAGE1B := $(wildcard runs/stage1b_*/scores.jsonl)
 STAGE1C := $(wildcard runs/stage1c_*/scores.jsonl)
+RAW := $(wildcard runs/stage1raw_*/scores.jsonl)
 BANKS := runs/bank_cheap3_v2 runs/bank_rest4
 
-.PHONY: recompute hashes banks full robustness figure excerpts told para budget
+.PHONY: recompute hashes banks full robustness figure excerpts told para raw budget
 
-recompute: hashes banks full robustness figure excerpts told para budget
+recompute: hashes banks full robustness figure excerpts told para raw budget
 
 hashes:
 	$(PY) -c "import json,hashlib,pathlib; h=json.load(open('prompts/HASHES.json')); \
@@ -37,6 +38,12 @@ told:
 
 para:
 	@if [ -n "$(STAGE1C)" ]; then $(PY) analysis/deltas.py para --orig $(STAGE1) --para $(STAGE1C) --out analysis/out/para > /dev/null && echo "para -> analysis/out/para/deltas.md"; fi
+
+raw:
+	@if [ -n "$(RAW)" ]; then \
+	  $(PY) analysis/calibrate.py --scores $(STAGE1) $(RAW) --attack-stage raw --out analysis/out/raw > /dev/null && \
+	  $(PY) analysis/fit.py --scores $(STAGE1) $(RAW) --attack-stage raw --out analysis/out/raw --perms 2000 2>/dev/null > /dev/null && \
+	  $(PY) analysis/robustness.py --scores $(STAGE1) $(RAW) --attack-stage raw --out analysis/out/raw 2>/dev/null > /dev/null && echo "raw (pre-polish attacks) -> analysis/out/raw"; fi
 
 budget:
 	PYTHONPATH=src $(PY) -m track_a.budget | head -1
