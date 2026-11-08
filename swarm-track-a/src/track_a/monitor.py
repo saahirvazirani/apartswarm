@@ -77,6 +77,7 @@ async def main() -> None:
     ap.add_argument("--inflight", type=int, default=8)
     ap.add_argument("--slow-inflight", type=int, default=3, help="in-flight cap for glm-5.2 / qwen3.5-397b")
     ap.add_argument("--key-idx", nargs="*", type=int, help="indices into the loaded API keys this process may use (default all)")
+    ap.add_argument("--reasoning", default=None, help="override reasoning effort for monitor calls (e.g. medium); default keeps the frozen reasoning.effort=none")
     args = ap.parse_args()
     for m in args.monitors:
         assert m in ALL_MODELS, m
@@ -116,9 +117,10 @@ async def main() -> None:
         if args.mon_condition == "told":
             kw["model_name"] = sub["policy"]
         prompt = render(template, **kw)
+        extra = {"extra_body": {"reasoning": {"effort": args.reasoning}}} if args.reasoning else {}
         r = await tc.call(monitor, prompt, temperature=TEMP_MONITOR, max_output_tokens=CAP_MONITOR, draw=draw, tag="monitor",
                           meta={"submission_id": sub["submission_id"], "monitor": monitor, "mon_condition": args.mon_condition},
-                          expect_output_tokens=120)
+                          expect_output_tokens=120, **extra)
         p = parse_score(r.text) if r.ok else parse_score("")
         rec = {
             "submission_id": sub["submission_id"], "task": sub["task"], "policy": sub["policy"], "condition": sub["condition"],

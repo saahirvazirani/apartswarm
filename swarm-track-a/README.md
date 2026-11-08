@@ -262,3 +262,12 @@ quote the gemma-31b diagonal as ≈0.20 (0.03–0.38 depending on tie rule). Rea
 (own-family 86% [82, 90] vs cross-family 84% [80, 89] on the same submissions, Δ +0.01 [−0.06, +0.08] — an informative
 null against an excuse-acceptance account); gemma-31b verbally flags the call in 28% of its own misses yet scores below
 its own benign threshold. The self-leniency lives in the assigned score, not the stated rationale.
+
+**Stage 1f pre-registration (Sun ~4:30 PM, before any Stage-1f call; exploratory).** Reasoning-on mitigation probe: the
+protocol fixed `reasoning.effort=none` at Gate 1; here gemma-4-31b-it re-scores every kept gemma-26b and gemma-31b
+submission (benign + polished attack) blind, 3 draws, with reasoning effort raised (`stage1f_reason`), monitor prompt
+byte-identical, thresholds re-calibrated on the reasoning-on benign scores. Question: is the gemma self-blind-spot a
+fast-judgment artifact? **Predictions, both stated before launch:** (a) deliberation closes the gap (own-cell catch rises
+toward the ~0.57 cross-family level) → a free mitigation; or (b) the gap persists under extra inference-time compute → the
+blind spot is robust, not a shallow-judgment artifact. Either is reported as-is. A 3-call parse-health probe precedes the
+run; if gemma's reasoning channel breaks JSON parsing, the stage is dropped and that is reported instead.
