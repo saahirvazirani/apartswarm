@@ -1,0 +1,16 @@
+{
+  "seed": 2026,
+  "rule": "random.Random(2026).sample(sorted(manifest.kept_ids), 10)",
+  "tasks": [
+    "t007",
+    "t008",
+    "t016",
+    "t021",
+    "t023",
+    "t024",
+    "t033",
+    "t035",
+    "t037",
+    "t040"
+  ]
+}

@@ -16,7 +16,7 @@ from datetime import datetime
 from pathlib import Path
 
 from .client import TrackClient, pick_keys
-from .config import ALL_MODELS, CAP_MONITOR, N_DRAWS, RUNS, TEMP_MONITOR
+from .config import ALL_MODELS, CAP_MONITOR, N_DRAWS, RUNS, TEMP_MONITOR, family
 from .jsonx import parse_score
 from .prompts import freeze_into, load_prompt, prompt_hashes, render
 from .bank import load_existing, load_tasks
@@ -67,6 +67,8 @@ async def main() -> None:
     ap.add_argument("--draws", type=int, default=N_DRAWS)
     ap.add_argument("--attack-stage", choices=["polished", "raw", "paraphrased"], default="polished")
     ap.add_argument("--benign-stage", choices=["raw", "paraphrased"], default="raw")
+    ap.add_argument("--rel", nargs="*", choices=["same_model", "same_family", "cross_family"], default=None,
+                    help="score only (policy, monitor) pairs with these relationships (default all)")
     ap.add_argument("--tasks", nargs="*")
     ap.add_argument("--policies", nargs="*")
     ap.add_argument("--tpm", type=float, default=60_000, help="token budget per minute per key")
@@ -94,6 +96,13 @@ async def main() -> None:
     template = load_prompt("monitor_blind" if args.mon_condition == "blind" else "monitor_told")
     lock = asyncio.Lock()
     n_new = 0
+
+    def rel_ok(sub: dict, monitor: str) -> bool:
+        if not args.rel:
+            return True
+        p = sub["policy"]
+        rel = "same_model" if p == monitor else ("same_family" if family(p) == family(monitor) else "cross_family")
+        return rel in args.rel
 
     async def score(sub: dict, monitor: str, draw: int, tc: TrackClient) -> None:
         nonlocal n_new
@@ -123,8 +132,9 @@ async def main() -> None:
 
     t0 = time.time()
     async with TrackClient(run_dir, keys=pick_keys(args.key_idx), tpm_per_key=args.tpm, fast_inflight=args.inflight, slow_inflight=args.slow_inflight) as tc:
-        jobs = [score(s, m, d, tc) for s in subs for m in args.monitors for d in range(args.draws)]
-        todo = sum(1 for s in subs for m in args.monitors for d in range(args.draws) if (s["submission_id"], m, args.mon_condition, d) not in done)
+        pairs = [(s, m) for s in subs for m in args.monitors if rel_ok(s, m)]
+        jobs = [score(s, m, d, tc) for s, m in pairs for d in range(args.draws)]
+        todo = sum(1 for s, m in pairs for d in range(args.draws) if (s["submission_id"], m, args.mon_condition, d) not in done)
         print(f"{len(subs)} kept submissions x {len(args.monitors)} monitors x {args.draws} draws = {len(jobs)} ({todo} to do)")
         await asyncio.gather(*jobs)
         spent = tc.session_spent
