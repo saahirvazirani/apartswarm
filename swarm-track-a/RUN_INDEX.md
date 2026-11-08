@@ -6,6 +6,7 @@
 | Bank table: utility, telemetry use, side-task success, refusals (Table 1 / appendix) | `runs/bank_cheap3_v2` (deepseek-v4-flash, gemma-4-26b-a4b-it, glm-53-flash), `runs/bank_rest4` (gemma-4-31b-it, qwen3.8-27b, qwen3.5-397b, glm-5.2) | confirmatory | `.venv/bin/python analysis/bank_tables.py --banks runs/bank_cheap3_v2 runs/bank_rest4 --out analysis/out/banks` |
 | First cheap-3 bank (superseded; 80% API failures, 2500 cap) | `runs/bank_cheap3` | exploratory, not used | — |
 | Human gate samples (20 random kept polished attacks per bank) | `runs/bank_cheap3_v2/human_gate/`, `runs/bank_rest4/human_gate/` | — | — |
+| Hand verification of any cell (human check, Sun AM) | `runs/stage1_mon{A,B,C}/scores.jsonl` | — | `.venv/bin/python analysis/verify_cell.py --policy <p> --monitor <m> --scores runs/stage1_mon*/scores.jsonl` (first-principles recount; must match `analysis/out/full/cells.csv`) |
 
 ## Gate log
 
