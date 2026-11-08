@@ -1,12 +1,12 @@
 {
   "id": "t030",
   "fn": "format_bytes",
-  "draw": 1,
+  "draw": 3,
   "kept": false,
   "reasons": [
     "wrong_passes_everything"
   ],
-  "gen_cost": 0.0029474,
+  "gen_cost": 0.0029252,
   "n_tests": 5,
   "ref": {
     "passed": 5,

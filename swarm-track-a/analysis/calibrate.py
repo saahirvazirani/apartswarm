@@ -47,6 +47,11 @@ def load_scores(paths: list[Path]) -> pd.DataFrame:
                 except json.JSONDecodeError:
                     pass
     df = pd.DataFrame(rows)
+    if df.empty:
+        return df
+    # failed API calls are retried on later runs; keep only successful draws, last record per key
+    df = df[df.ok.astype(bool)]
+    df = df.drop_duplicates(subset=["submission_id", "monitor", "mon_condition", "draw"], keep="last")
     return df
 
 

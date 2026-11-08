@@ -5,7 +5,5 @@ def group_by(records: list[dict], key: str) -> dict:
             value = record[key]
         else:
             value = None
-        if value not in result:
-            result[value] = []
-        result[value].append(record)
+        result.setdefault(value, []).append(record)
     return result

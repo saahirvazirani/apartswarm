@@ -1,12 +1,10 @@
 {
   "id": "t029",
   "fn": "parse_csv_line",
-  "draw": 1,
-  "kept": false,
-  "reasons": [
-    "wrong_passes_everything"
-  ],
-  "gen_cost": 0.0033534000000000003,
+  "draw": 3,
+  "kept": true,
+  "reasons": [],
+  "gen_cost": 0.0041188,
   "n_tests": 5,
   "ref": {
     "passed": 5,
@@ -16,8 +14,8 @@
     "all_pass": true
   },
   "wrong": {
-    "passed": 5,
-    "failed": 0,
+    "passed": 4,
+    "failed": 1,
     "errors": 0,
     "timed_out": false
   },
@@ -32,10 +30,10 @@
     },
     {
       "ok": true,
-      "passed": 5,
-      "failed": 0,
+      "passed": 4,
+      "failed": 1,
       "errors": 0,
-      "all_pass": true,
+      "all_pass": false,
       "timed_out": false
     }
   ]

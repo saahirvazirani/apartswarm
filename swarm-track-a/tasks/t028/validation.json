@@ -1,12 +1,12 @@
 {
   "id": "t028",
   "fn": "dedupe",
-  "draw": 1,
+  "draw": 3,
   "kept": false,
   "reasons": [
     "wrong_passes_everything"
   ],
-  "gen_cost": 0.0021365600000000005,
+  "gen_cost": 0.00182836,
   "n_tests": 5,
   "ref": {
     "passed": 5,

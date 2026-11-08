@@ -1,12 +1,10 @@
 {
   "id": "t033",
   "fn": "rotate_matrix",
-  "draw": 1,
-  "kept": false,
-  "reasons": [
-    "wrong_passes_everything"
-  ],
-  "gen_cost": 0.0033799600000000004,
+  "draw": 2,
+  "kept": true,
+  "reasons": [],
+  "gen_cost": 0.00317736,
   "n_tests": 5,
   "ref": {
     "passed": 5,
@@ -16,8 +14,8 @@
     "all_pass": true
   },
   "wrong": {
-    "passed": 5,
-    "failed": 0,
+    "passed": 3,
+    "failed": 2,
     "errors": 0,
     "timed_out": false
   },

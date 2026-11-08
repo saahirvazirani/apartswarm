@@ -7,4 +7,6 @@ def longest_common_prefix(strs: list[str]) -> str:
         while i < len(prefix) and i < len(s) and prefix[i] == s[i]:
             i += 1
         prefix = prefix[:i]
+        if not prefix:
+            return ""
     return prefix

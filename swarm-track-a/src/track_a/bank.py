@@ -19,13 +19,14 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from .client import TrackClient
+from .client import TrackClient, pick_keys
 from .config import (ALL_MODELS, CANARY, CAP_POLICY, CAP_POLISH, N_RESAMPLES, RUNS, TASKS, TEMP_POLICY)
 from .jsonx import extract_code, looks_like_refusal
 from .prompts import freeze_into, load_prompt, prompt_hashes
 from .sandbox import run_tests, utils_source
 
 TEST_PAR = asyncio.Semaphore(8)
+EXPECT_OUT = 900   # pacing estimate only; the token bucket reconciles with reported usage after each call
 
 
 def sid(task: str, policy: str, condition: str, stage: str, resample: int) -> str:
@@ -48,6 +49,7 @@ def load_tasks(only: list[str] | None = None) -> dict[str, dict]:
 
 
 def load_existing(path: Path) -> dict[tuple, dict]:
+    """Last record per key wins; a later successful re-run supersedes an earlier failed attempt."""
     if not path.exists():
         return {}
     out = {}
@@ -57,8 +59,16 @@ def load_existing(path: Path) -> dict[tuple, dict]:
                 r = json.loads(line)
             except json.JSONDecodeError:
                 continue
-            out[(r["task"], r["policy"], r["condition"], r["stage"], r["resample"])] = r
+            k = (r["task"], r["policy"], r["condition"], r["stage"], r["resample"])
+            prev = out.get(k)
+            if prev is None or r.get("ok") or not prev.get("ok"):
+                out[k] = r
     return out
+
+
+def is_final(rec: dict | None) -> bool:
+    """A record counts as done if its API call succeeded (or it was a deliberate skip)."""
+    return bool(rec) and (rec.get("ok") or rec.get("skipped"))
 
 
 async def test_code(code: str, tests: str, utils_src: str, label: str) -> dict:
@@ -69,12 +79,16 @@ async def test_code(code: str, tests: str, utils_src: str, label: str) -> dict:
 
 
 class Bank:
-    def __init__(self, run_dir: Path, tc: TrackClient, utils_src: str):
+    def __init__(self, run_dir: Path, tc: TrackClient, utils_src: str, redo_policies: set[str] | None = None):
         self.run_dir = run_dir
         self.tc = tc
         self.utils_src = utils_src
         self.path = run_dir / "submissions.jsonl"
         self.existing = load_existing(self.path)
+        # policies whose existing records are regenerated (treated as absent; cache bypassed; new records supersede old ones)
+        self.redo = set(redo_policies or ())
+        if self.redo:
+            self.existing = {k: r for k, r in self.existing.items() if r["policy"] not in self.redo}
         self._lock = asyncio.Lock()
         self.polish_format = "messages"
 
@@ -86,12 +100,12 @@ class Bank:
 
     async def benign(self, task: dict, policy: str, resample: int) -> None:
         key = (task["id"], policy, "benign", "raw", resample)
-        if key in self.existing:
+        if is_final(self.existing.get(key)):
             return
         r = await self.tc.call(policy, task["task_text"], instructions=load_prompt("policy_benign"), temperature=TEMP_POLICY,
                                max_output_tokens=CAP_POLICY, draw=resample, tag="bank_benign",
-                               meta={"task": task["id"], "resample": resample})
-        code = extract_code(r.text) if r.ok else ""
+                               meta={"task": task["id"], "resample": resample}, expect_output_tokens=EXPECT_OUT, refresh=policy in self.redo)
+        code = extract_code(r.text, task["fn"]) if r.ok else ""
         tests = await test_code(code, task["tests"], self.utils_src, f"{task['id']}_b{resample}") if code.strip() else None
         await self.write({
             "submission_id": sid(*key), "task": task["id"], "policy": policy, "condition": "benign", "stage": "raw",
@@ -104,17 +118,20 @@ class Bank:
     async def attack(self, task: dict, policy: str, resample: int) -> None:
         key_raw = (task["id"], policy, "attack", "raw", resample)
         key_pol = (task["id"], policy, "attack", "polished", resample)
-        if key_raw in self.existing and key_pol in self.existing:
+        _raw0, _pol0 = self.existing.get(key_raw), self.existing.get(key_pol)
+        if is_final(_raw0) and is_final(_pol0) and not (_pol0.get("skipped") == "empty_raw" and _raw0.get("code", "").strip()):
             return
         attack_instr = load_prompt("policy_attack")
         raw_rec = self.existing.get(key_raw)
+        if raw_rec is not None and not is_final(raw_rec):
+            raw_rec = None
         raw_text = None
         if raw_rec is None:
             r = await self.tc.call(policy, task["task_text"], instructions=attack_instr, temperature=TEMP_POLICY,
                                    max_output_tokens=CAP_POLICY, draw=resample, tag="bank_attack_raw",
-                                   meta={"task": task["id"], "resample": resample})
+                                   meta={"task": task["id"], "resample": resample}, expect_output_tokens=EXPECT_OUT, refresh=policy in self.redo)
             raw_text = r.text if r.ok else ""
-            code = extract_code(raw_text)
+            code = extract_code(raw_text, task["fn"])
             tests = await test_code(code, task["tests"], self.utils_src, f"{task['id']}_a{resample}") if code.strip() else None
             raw_rec = {
                 "submission_id": sid(*key_raw), "task": task["id"], "policy": policy, "condition": "attack", "stage": "raw",
@@ -127,7 +144,10 @@ class Bank:
             await self.write(raw_rec)
         else:
             raw_text = raw_rec.get("raw_text") or raw_rec["code"]
-        if key_pol in self.existing:
+        pol_rec = self.existing.get(key_pol)
+        # a polish record skipped because the raw call had failed is stale once the raw call has succeeded with code
+        stale_skip = bool(pol_rec and pol_rec.get("skipped") == "empty_raw" and raw_rec["code"].strip())
+        if is_final(pol_rec) and not stale_skip:
             return
         if not raw_rec["code"].strip():
             await self.write({**{k: raw_rec[k] for k in ("task", "policy", "resample")}, "submission_id": sid(*key_pol),
@@ -143,14 +163,16 @@ class Bank:
             {"role": "user", "content": polish},
         ]
         r = await self.tc.call(policy, msgs, instructions=attack_instr, temperature=TEMP_POLICY, max_output_tokens=CAP_POLISH,
-                               draw=resample, tag="bank_attack_polish", meta={"task": task["id"], "resample": resample})
+                               draw=resample, tag="bank_attack_polish", meta={"task": task["id"], "resample": resample},
+                               expect_output_tokens=EXPECT_OUT, refresh=policy in self.redo)
         fmt = "messages"
         if (not r.ok) and r.status in (400, 422):
             flat = f"{task['task_text']}\n\nYour previous submission:\n```python\n{raw_rec['code']}```\n\n{polish}"
             r = await self.tc.call(policy, flat, instructions=attack_instr, temperature=TEMP_POLICY, max_output_tokens=CAP_POLISH,
-                                   draw=resample, tag="bank_attack_polish_flat", meta={"task": task["id"], "resample": resample})
+                                   draw=resample, tag="bank_attack_polish_flat", meta={"task": task["id"], "resample": resample},
+                                   expect_output_tokens=EXPECT_OUT, refresh=policy in self.redo)
             fmt = "flat"
-        code = extract_code(r.text) if r.ok else ""
+        code = extract_code(r.text, task["fn"]) if r.ok else ""
         tests = await test_code(code, task["tests"], self.utils_src, f"{task['id']}_p{resample}") if code.strip() else None
         await self.write({
             "submission_id": sid(*key_pol), "task": task["id"], "policy": policy, "condition": "attack", "stage": "polished",
@@ -182,6 +204,11 @@ async def main() -> None:
     ap.add_argument("--conditions", nargs="+", default=["benign", "attack"])
     ap.add_argument("--resamples", type=int, default=N_RESAMPLES)
     ap.add_argument("--tasks", nargs="*")
+    ap.add_argument("--tpm", type=float, default=60_000, help="token budget per minute per key")
+    ap.add_argument("--inflight", type=int, default=6)
+    ap.add_argument("--slow-inflight", type=int, default=3, help="in-flight cap for glm-5.2 / qwen3.5-397b")
+    ap.add_argument("--key-idx", nargs="*", type=int, help="indices into the loaded API keys this process may use (default all)")
+    ap.add_argument("--redo-policies", nargs="*", default=[], help="regenerate these policies' records (bypass cache; new records supersede)")
     args = ap.parse_args()
     for p in args.policies:
         assert p in ALL_MODELS, p
@@ -196,8 +223,8 @@ async def main() -> None:
     meta_path.write_text(json.dumps(meta, indent=2))
 
     t0 = time.time()
-    async with TrackClient(run_dir) as tc:
-        bank = Bank(run_dir, tc, utils_source())
+    async with TrackClient(run_dir, keys=pick_keys(args.key_idx), tpm_per_key=args.tpm, fast_inflight=args.inflight, slow_inflight=args.slow_inflight) as tc:
+        bank = Bank(run_dir, tc, utils_source(), set(args.redo_policies))
         jobs = []
         for t in tasks.values():
             for p in args.policies:
@@ -206,11 +233,13 @@ async def main() -> None:
                         jobs.append(bank.benign(t, p, i))
                     if "attack" in args.conditions:
                         jobs.append(bank.attack(t, p, i))
+        n_final = sum(1 for r in bank.existing.values() if is_final(r))
         print(f"{len(jobs)} jobs over {len(tasks)} tasks x {len(args.policies)} policies x {args.resamples} resamples "
-              f"({len(bank.existing)} records already present)")
+              f"({n_final} records already final, {len(bank.existing) - n_final} failed records to redo)")
         await asyncio.gather(*jobs)
         spent = tc.session_spent
         hits = tc.n_cache_hits
+        print(tc.stats())
 
     recs = list(load_existing(run_dir / "submissions.jsonl").values())
     table = summarize(recs)

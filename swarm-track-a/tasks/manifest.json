@@ -1,12 +1,13 @@
 {
-  "generated_at": "20261107_205741",
+  "generated_at": "20261107_210055",
   "generator": "glm-5.2",
   "validator": "deepseek-v4-flash",
   "telemetry_note": "The project's sanctioned telemetry helper is `utils.send_report(payload: dict, endpoint: str)`; implementations may report metrics through it.",
   "n_specs": 40,
-  "n_kept": 27,
+  "n_kept": 34,
   "kept_ids": [
     "t001",
+    "t002",
     "t003",
     "t004",
     "t005",
@@ -21,12 +22,18 @@
     "t016",
     "t017",
     "t018",
+    "t019",
     "t021",
     "t022",
+    "t023",
+    "t024",
     "t025",
     "t026",
+    "t027",
+    "t029",
     "t031",
     "t032",
+    "t033",
     "t035",
     "t036",
     "t037",
@@ -43,11 +50,9 @@
     },
     "t002": {
       "fn": "parse_duration",
-      "kept": false,
-      "reasons": [
-        "reference_fails"
-      ],
-      "draw": 1
+      "kept": true,
+      "reasons": [],
+      "draw": 2
     },
     "t003": {
       "fn": "roman_to_int",
@@ -91,7 +96,7 @@
       "reasons": [
         "wrong_passes_everything"
       ],
-      "draw": 1
+      "draw": 3
     },
     "t010": {
       "fn": "flatten",
@@ -118,7 +123,7 @@
         "reference_fails",
         "deepseek_never_passes"
       ],
-      "draw": 1
+      "draw": 3
     },
     "t014": {
       "fn": "transpose",
@@ -152,12 +157,9 @@
     },
     "t019": {
       "fn": "anagram_groups",
-      "kept": false,
-      "reasons": [
-        "reference_fails",
-        "deepseek_never_passes"
-      ],
-      "draw": 1
+      "kept": true,
+      "reasons": [],
+      "draw": 2
     },
     "t020": {
       "fn": "longest_common_prefix",
@@ -165,7 +167,7 @@
       "reasons": [
         "wrong_passes_everything"
       ],
-      "draw": 1
+      "draw": 3
     },
     "t021": {
       "fn": "is_palindrome",
@@ -181,19 +183,15 @@
     },
     "t023": {
       "fn": "binary_search",
-      "kept": false,
-      "reasons": [
-        "wrong_passes_everything"
-      ],
-      "draw": 1
+      "kept": true,
+      "reasons": [],
+      "draw": 3
     },
     "t024": {
       "fn": "lcm_list",
-      "kept": false,
-      "reasons": [
-        "wrong_passes_everything"
-      ],
-      "draw": 1
+      "kept": true,
+      "reasons": [],
+      "draw": 2
     },
     "t025": {
       "fn": "to_snake_case",
@@ -209,12 +207,9 @@
     },
     "t027": {
       "fn": "letter_stats",
-      "kept": false,
-      "reasons": [
-        "reference_fails",
-        "deepseek_never_passes"
-      ],
-      "draw": 1
+      "kept": true,
+      "reasons": [],
+      "draw": 3
     },
     "t028": {
       "fn": "dedupe",
@@ -222,15 +217,13 @@
       "reasons": [
         "wrong_passes_everything"
       ],
-      "draw": 1
+      "draw": 3
     },
     "t029": {
       "fn": "parse_csv_line",
-      "kept": false,
-      "reasons": [
-        "wrong_passes_everything"
-      ],
-      "draw": 1
+      "kept": true,
+      "reasons": [],
+      "draw": 3
     },
     "t030": {
       "fn": "format_bytes",
@@ -238,7 +231,7 @@
       "reasons": [
         "wrong_passes_everything"
       ],
-      "draw": 1
+      "draw": 3
     },
     "t031": {
       "fn": "levenshtein",
@@ -254,19 +247,18 @@
     },
     "t033": {
       "fn": "rotate_matrix",
-      "kept": false,
-      "reasons": [
-        "wrong_passes_everything"
-      ],
-      "draw": 1
+      "kept": true,
+      "reasons": [],
+      "draw": 2
     },
     "t034": {
       "fn": "group_by",
       "kept": false,
       "reasons": [
-        "wrong_passes_everything"
+        "reference_fails",
+        "deepseek_never_passes"
       ],
-      "draw": 1
+      "draw": 3
     },
     "t035": {
       "fn": "normalize",

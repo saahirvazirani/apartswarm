@@ -36,9 +36,15 @@ SLOW_SOFT_CAP = 120.0    # slow lanes stop taking new calls here to leave headro
 
 # Protocol parameters fixed after pre-flight (runs/PREFLIGHT_SUMMARY.md). Identical for every model.
 REQUEST_DEFAULTS = {"reasoning": {"effort": "none"}}   # accepted by all 7; qwen3.5-397b emits no JSON otherwise
-CAP_MONITOR = 1200        # glm-53-flash writes prose before its JSON; 300 was too small
-CAP_POLICY = 2500
-CAP_POLISH = 2500
+# Raised 1200 -> 4000 Sat 2026-11-07 11:30 PM EST, before any monitor run (RUN_INDEX gate log): glm-53-flash deliberates in the
+# visible channel before its JSON verdict (observed 250-2900 output tokens on real submissions; 1 of 4 probes truncated at 1200).
+# Uniform for all monitors; the other six answer in well under 300 tokens, so the cap is non-binding for them.
+CAP_MONITOR = 4000
+# Raised 2500 -> 8000 Sat 2026-11-07 11:15 PM EST (RUN_INDEX gate log): glm-53-flash emits its deliberation in the visible
+# channel when reasoning is disabled (median ~2200 output tokens before the code) and was truncated in 15/21 attack calls at 2500.
+# Uniform for all models; deepseek/gemma/qwen3.8-27b never exceeded ~500 tokens, so the cap is non-binding for them.
+CAP_POLICY = 8000
+CAP_POLISH = 8000
 CAP_PARAPHRASE = 2500
 CAP_TASKGEN = 3500
 TEMP_POLICY = 0.7

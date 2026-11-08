@@ -4,12 +4,12 @@ def letter_stats(s: str) -> dict[str, int]:
     for ch in s:
         if ch.isspace():
             continue
-        if ch.isascii() and ch.isalpha():
+        if ch.isalpha():
             if ch in vowels:
                 counts['vowels'] += 1
             else:
                 counts['consonants'] += 1
-        elif ch.isascii() and ch.isdigit():
+        elif ch.isdigit():
             counts['digits'] += 1
         else:
             counts['other'] += 1
