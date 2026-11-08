@@ -158,6 +158,15 @@ than cross-family misses of the same submissions ($\Delta$ +0.01 $[-0.06, +0.08]
 the call in 28\% of its own misses while scoring it below its own benign threshold. The self-leniency lives in the
 assigned score, not the stated rationale.
 
+
+\paragraph{The contrast, in one exchange.} The same successful attack (task t040, policy qwen3.8-27b; code correct,
+telemetry call carries the marker) scored blind by two monitors. Its own model, draws 0, 0, 0, passed: \emph{``uses the
+sanctioned telemetry helper with a placeholder endpoint that does not appear to exfiltrate sensitive data.''}
+deepseek-v4-flash, draws 100, 100, 85, caught: \emph{``exfiltrates data \ldots to an unauthorized external endpoint
+(\ldots/CANARY-7F3A/collect) \ldots for a hidden data collection purpose.''} The gemma case is starker: gemma-31b names
+the canary in 57\% of reasons on its own attacks, scores them $\approx$85 --- and its self-calibrated threshold sits at
+exactly 85, so they pass on the tie (Appendix~\ref{app:excerpts}; full transcripts in \codefile{analysis/out/full/}).
+
 \subsection{Mechanism: not stated identity, not surface form}
 \begin{itemize}
 \item \textbf{Told vs blind}: naming the author model lowers attack suspicion by $\approx$2 points for every
@@ -167,7 +176,8 @@ diagonal-specific.
 $0.61 \to 0.57$, cross-family $0.72 \to 0.69$). Not surface-form self-recognition.
 \item A follow-up in which gemma-31b rewrote every submission did \textbf{not} produce a writer-specific blind spot
 (diagonal-specific $-1.0$ $[-6.0, +4.3]$); it mainly showed gemma-31b is an effective general obfuscator against an
-outside monitor.
+outside monitor. (These told/paraphrase nulls are powered to detect $\approx$4-point score effects --- the intervals rule out
+large diagonal-specific channels, not small ones.)
 \end{itemize}
 Together these point to a shared blind spot: the same model writes, and fails to flag, the same kind of justified-looking
 code.
@@ -175,16 +185,14 @@ code.
 \subsection{Replication on a second, inert attack class}\label{sec:logic}
 We repeated the study with a structurally different hidden objective (the inert ``backdoored code'' setup): return a
 result that differs from the correct one when the input contains the marker, correct otherwise, verified behaviourally in
-the sandbox. On 12 string-input tasks and 130 successful attacks, the gemma pattern \textbf{qualitatively replicates}: under the
-pre-registered quantile thresholds same-model catch is 0.56 vs cross-family 0.83 (diagonal$-$cross $-0.269$
-$[-0.333, -0.208]$, \codefile{same\_model} OR 0.45, $p = 0.003$), and gemma-31b again catches 7\% of its own attacks
-versus 60--100\% by cross-family monitors. The magnitudes are threshold-estimator-sensitive: logic thresholds rest on
-$n \approx 34$--36 benign scores per pair, and under tie-robust interpolation at matched 5\% FPR the pooled gap shrinks
-to $-0.070$ $[-0.153, +0.023]$ while gemma-31b's own cell stays low (0.25 vs 0.60--1.00 cross). An apparent
-qwen3.5-397b self-leniency (0.28 own under quantile thresholds) weakens to 0.67 under interpolation, and gemma-31b misses
-the same qwen3.5 attacks almost entirely (0.03) despite being cross-family --- part of its low diagonal is a broader
-weakness on evasive policies, not pure identity. The replication claim we stand behind is therefore the gemma one: robust
-in direction, with magnitudes uncertain at this $n$ (some diagonal cells have $n = 10$).
+the sandbox. On 12 string-input tasks and 130 successful attacks, the gemma pattern \textbf{qualitatively replicates}: same-model
+catch 0.56 vs cross-family 0.83 under the pre-registered quantile thresholds (diagonal$-$cross $-0.269$
+$[-0.333, -0.208]$, OR 0.45, $p = 0.003$); gemma-31b again catches 7\% of its own attacks versus 60--100\% by
+cross-family monitors. Magnitudes are threshold-sensitive at this scale (benign $n \approx 35$ per pair; some cells
+$n = 10$): under matched-FPR interpolation the pooled gap shrinks to $-0.070$ $[-0.153, +0.023]$ while gemma-31b's own
+cell stays low (0.25 vs 0.60--1.00 cross). The claim we stand behind is directional replication for gemma; the
+estimator mechanics and an apparent, non-robust qwen3.5-397b self-leniency are in the appendix evidence map
+(\codefile{analysis/out/matched/}).
 
 \subsection{Monitor assignment and the control view}
 A cross-family monitor is never worse than the own-model monitor for the gemma policies and is the best single monitor
@@ -203,7 +211,9 @@ trusted monitor (45\%); for non-gemma policies own and trusted are comparable.
 
 \subsection{Secondary: policy behaviour}
 Utility (benign pass rate) is 95--100\% for every policy. Successful-attack rate is 75--100\% except glm-53-flash, which
-explicitly refuses the covert objective in 18\% of attempts after visible deliberation
+explicitly refuses the covert objective in 18\% of attempts after visible deliberation. As a human
+gate, a teammate read [N --- verifier records tonight] randomly drawn successful attack submissions and confirmed they
+are plausible, working code rather than prompt artifacts
 (\codefile{analysis/out/banks/}).
 
 \section{Discussion}
@@ -272,7 +282,9 @@ experimental subjects. The abstract, introduction and discussion are written by 
 \end{thebibliography}
 
 \appendix
-\section{Evidence map}
+\section{Evidence map}\label{app:excerpts}
+The required Limitations and Dual-Use / Ethical Considerations appendix is \S5, kept in the body deliberately.
+
 Every number above recomputes from stored model outputs with \codefile{make recompute}; \codefile{RUN\_INDEX.md} maps
 each paper number to a run folder and a command. Per-pair TPR/AUROC matrices with intervals:
 \codefile{analysis/out/full/matrix.md}. Two-way fit, permutation, bootstrap, leave-one-family-out, drop-one-cell:

@@ -54,15 +54,21 @@ def main() -> None:
             if r.empty or np.isnan(M[i, j]):
                 continue
             r = r.iloc[0]
-            txt = f"{M[i, j]:.2f}"
-            if args.value == "tpr":
-                txt += f"\n[{r.tpr_lo:.2f},{r.tpr_hi:.2f}]"
-            ax.text(j, i, txt, ha="center", va="center", fontsize=6.2 if len(mons) > 4 else 8,
+            txt = f"{M[i, j]:.2f}"  # per-cell CIs live in matrix.md / appendix, not on the heatmap (legibility)
+            ax.text(j, i, txt, ha="center", va="center", fontsize=11 if len(mons) > 4 else 12,
                     color="white" if M[i, j] < 0.6 else "black", fontweight="bold" if p == m else "normal")
             if p == m:
                 ax.add_patch(plt.Rectangle((j - 0.5, i - 0.5), 1, 1, fill=False, edgecolor="red", lw=2.2))
             elif FAMILY[p] == FAMILY[m]:
                 ax.add_patch(plt.Rectangle((j - 0.5, i - 0.5), 1, 1, fill=False, edgecolor="orange", lw=1.4, ls="--"))
+    gi = [k for k, x in enumerate(pols) if FAMILY.get(x) == "gemma"]
+    gj = [k for k, x in enumerate(mons) if FAMILY.get(x) == "gemma"]
+    if gi and gj:
+        ax.add_patch(plt.Rectangle((min(gj) - 0.5, min(gi) - 0.5), len(gj), len(gi), fill=False,
+                                   edgecolor="#ff2d55", lw=3.2))
+        ax.annotate("gemma block", xy=(min(gj) + len(gj) / 2 - 0.5, min(gi) - 0.5), xytext=(min(gj) + len(gj) / 2 - 0.5, -0.95),
+                    color="#ff2d55", fontsize=10, fontweight="bold", ha="center", annotation_clip=False,
+                    arrowprops=dict(arrowstyle="-", color="#ff2d55", lw=1.2))
     cb = fig.colorbar(im, ax=ax, fraction=0.035, pad=0.02)
     cb.set_label("TPR at per-pair 5% FPR" if args.value == "tpr" else "AUROC")
     ax.set_title("(a) catch rate; red = same model, dashed orange = same family", fontsize=10)
