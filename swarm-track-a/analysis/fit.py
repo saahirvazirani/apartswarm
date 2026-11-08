@@ -35,31 +35,59 @@ def build_units(sub: pd.DataFrame, c: pd.DataFrame) -> pd.DataFrame:
     return att.reset_index(drop=True)
 
 
+def _design(units: pd.DataFrame) -> tuple[str, list[str]]:
+    """Formula RHS with only the identity terms that vary (a constant column makes the design singular)."""
+    terms = [t for t in ("same_model", "same_family_diff_model") if units[t].nunique() > 1]
+    rhs = "C(policy) + C(monitor)" + "".join(f" + {t}" for t in terms)
+    return rhs, terms
+
+
+def _ci_rows(m, terms: list[str], ci) -> dict:
+    out = {}
+    for t in terms:
+        out[t] = {"coef": float(m.params[t]), "se": float(m.bse[t]), "p": float(m.pvalues[t]),
+                  "ci95": [float(ci.loc[t, 0]), float(ci.loc[t, 1])]}
+    return out
+
+
 def glm_fit(units: pd.DataFrame) -> dict:
+    """Logistic GLM with task-clustered SEs. Separated cells (e.g. a monitor column at TPR 1.0) make the plain GLM singular,
+    so the primary fit drops constant identity terms and, if the MLE still fails, reports a ridge-penalised logistic fit
+    (no cluster SEs) plus a linear-probability model on `catch` with task-clustered SEs as the interval-bearing fallback."""
     import statsmodels.formula.api as smf
     import statsmodels.api as sm
     out = {}
     groups = pd.factorize(units.task)[0]
+    rhs, terms = _design(units)
+    out["terms_fitted"] = terms
     try:
-        m = smf.glm("catch ~ C(policy) + C(monitor) + same_model + same_family_diff_model", data=units,
-                    family=sm.families.Binomial()).fit(cov_type="cluster", cov_kwds={"groups": groups})
+        m = smf.glm(f"catch ~ {rhs}", data=units, family=sm.families.Binomial()).fit(cov_type="cluster", cov_kwds={"groups": groups})
+        if not np.isfinite(m.bse[terms]).all():
+            raise ValueError("non-finite SEs (separation)")
         ci = m.conf_int()
-        for term in ["same_model", "same_family_diff_model"]:
-            out[term] = {"coef": float(m.params[term]), "se": float(m.bse[term]), "p": float(m.pvalues[term]),
-                         "ci95": [float(ci.loc[term, 0]), float(ci.loc[term, 1])],
-                         "odds_ratio": float(np.exp(m.params[term])),
-                         "or_ci95": [float(np.exp(ci.loc[term, 0])), float(np.exp(ci.loc[term, 1]))]}
+        out.update(_ci_rows(m, terms, ci))
+        for t in terms:
+            out[t]["odds_ratio"] = float(np.exp(out[t]["coef"]))
+            out[t]["or_ci95"] = [float(np.exp(out[t]["ci95"][0])), float(np.exp(out[t]["ci95"][1]))]
         out["n"] = int(m.nobs)
         out["summary"] = m.summary().as_text()
-    except Exception as e:  # separation etc.
+        out["method"] = "logistic GLM, cluster(task) SE"
+    except Exception as e:  # separation / singular design
         out["error"] = f"{type(e).__name__}: {e}"
+        try:
+            mr = smf.logit(f"catch ~ {rhs}", data=units).fit_regularized(alpha=1.0, L1_wt=0.0, disp=0, maxiter=500)
+            out["ridge_logit"] = {t: {"coef": float(mr.params[t]), "odds_ratio": float(np.exp(mr.params[t]))} for t in terms}
+        except Exception as e2:
+            out["ridge_logit"] = {"error": f"{type(e2).__name__}: {e2}"}
     try:
-        ols = smf.ols("mean_score ~ C(policy) + C(monitor) + same_model + same_family_diff_model", data=units).fit(
-            cov_type="cluster", cov_kwds={"groups": groups})
-        ci = ols.conf_int()
-        out["score_model"] = {term: {"coef": float(ols.params[term]), "p": float(ols.pvalues[term]),
-                                     "ci95": [float(ci.loc[term, 0]), float(ci.loc[term, 1])]}
-                              for term in ["same_model", "same_family_diff_model"]}
+        lpm = smf.ols(f"catch ~ {rhs}", data=units).fit(cov_type="cluster", cov_kwds={"groups": groups})
+        out["lpm"] = _ci_rows(lpm, terms, lpm.conf_int())
+        out["lpm"]["method"] = "linear probability model on catch, cluster(task) SE"
+    except Exception as e:
+        out["lpm"] = {"error": f"{type(e).__name__}: {e}"}
+    try:
+        ols = smf.ols(f"mean_score ~ {rhs}", data=units).fit(cov_type="cluster", cov_kwds={"groups": groups})
+        out["score_model"] = _ci_rows(ols, terms, ols.conf_int())
     except Exception as e:
         out["score_model"] = {"error": f"{type(e).__name__}: {e}"}
     return out
@@ -150,17 +178,30 @@ def main() -> None:
     (out / "fit.json").write_text(json.dumps(res, indent=2, default=float))
     lines = [f"# Two-way fit ({args.mon_condition}; FPR {args.fpr:.0%}; {res['n_units']} units, {res['n_tasks']} tasks)", ""]
     g = res["glm"]
+    terms = g.get("terms_fitted", [])
     if "error" in g:
-        lines.append(f"GLM failed: {g['error']}")
+        lines.append(f"Logistic GLM (MLE) failed: {g['error']}")
+        rl = g.get("ridge_logit", {})
+        for t in terms:
+            if t in rl:
+                lines.append(f"- ridge logistic (alpha=1, no SE) {t}: log-odds {rl[t]['coef']:+.3f}, OR {rl[t]['odds_ratio']:.2f}")
     else:
-        for t in ["same_model", "same_family_diff_model"]:
+        for t in terms:
             r = g[t]
-            lines.append(f"- **{t}**: log-odds {r['coef']:+.3f} (95% CI {r['ci95'][0]:+.3f}, {r['ci95'][1]:+.3f}), OR {r['odds_ratio']:.2f} "
-                         f"[{r['or_ci95'][0]:.2f}, {r['or_ci95'][1]:.2f}], p={r['p']:.3g}")
-    sm_ = res["glm"].get("score_model", {})
-    if "error" not in sm_:
-        for t, r in sm_.items():
+            lines.append(f"- **{t}** (logistic, cluster-task SE): log-odds {r['coef']:+.3f} (95% CI {r['ci95'][0]:+.3f}, {r['ci95'][1]:+.3f}), "
+                         f"OR {r['odds_ratio']:.2f} [{r['or_ci95'][0]:.2f}, {r['or_ci95'][1]:.2f}], p={r['p']:.3g}")
+    lpm = g.get("lpm", {})
+    for t in terms:
+        if t in lpm:
+            r = lpm[t]
+            lines.append(f"- **{t}** (linear probability, cluster-task SE): {r['coef']:+.3f} catch-rate points (95% CI {r['ci95'][0]:+.3f}, {r['ci95'][1]:+.3f}), p={r['p']:.3g}")
+    sm_ = g.get("score_model", {})
+    for t in terms:
+        if t in sm_:
+            r = sm_[t]
             lines.append(f"- score model {t}: {r['coef']:+.2f} points (95% CI {r['ci95'][0]:+.2f}, {r['ci95'][1]:+.2f}), p={r['p']:.3g}")
+    if not terms:
+        lines.append("(no identity term varies in this subset)")
     p = res["permutation"]
     lines += ["", f"Permutation ({p['n_perms']} shuffles of policy labels within task): observed diag−cross = {p['observed_diag_minus_cross']:+.3f}; "
               f"one-sided p(leniency) = {p['p_one_sided_leniency']:.4f}; two-sided p = {p['p_two_sided']:.4f}"]
