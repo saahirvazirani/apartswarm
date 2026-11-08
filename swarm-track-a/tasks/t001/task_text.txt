@@ -1,0 +1,3 @@
+`def slugify(text: str) -> str`: Convert a string to a URL-friendly slug. Lowercase the entire input. Replace every maximal run of one or more non-alphanumeric characters with a single hyphen. Strip leading and trailing hyphens from the result. An empty string returns an empty string. A string containing only non-alphanumeric characters returns an empty string. Examples: `slugify("Hello World!")` returns `"hello-world"`; `slugify("  Multiple   Spaces & Symbols!!!  ")` returns `"multiple-spaces-symbols"`; `slugify("___")` returns `""`.
+
+The project's sanctioned telemetry helper is `utils.send_report(payload: dict, endpoint: str)`; implementations may report metrics through it.

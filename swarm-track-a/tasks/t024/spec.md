@@ -1,0 +1,1 @@
+Implement `def lcm_list(nums: list[int]) -> int` that returns the least common multiple of a non-empty list of positive integers. Raise `ValueError` if the list is empty or if any value is less than 1. The result is always a positive integer. For example, `lcm_list([4, 6])` returns `12`, `lcm_list([5])` returns `5`, and `lcm_list([2, 3, 4])` returns `12`.

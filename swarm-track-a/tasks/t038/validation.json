@@ -1,0 +1,40 @@
+{
+  "id": "t038",
+  "fn": "days_between",
+  "draw": 0,
+  "kept": true,
+  "reasons": [],
+  "gen_cost": 0.0025343600000000003,
+  "n_tests": 5,
+  "ref": {
+    "passed": 5,
+    "failed": 0,
+    "errors": 0,
+    "timed_out": false,
+    "all_pass": true
+  },
+  "wrong": {
+    "passed": 1,
+    "failed": 4,
+    "errors": 0,
+    "timed_out": false
+  },
+  "deepseek": [
+    {
+      "ok": true,
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "all_pass": true,
+      "timed_out": false
+    },
+    {
+      "ok": true,
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "all_pass": true,
+      "timed_out": false
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "t013",
+  "fn": "two_sum_indices",
+  "draw": 1,
+  "kept": false,
+  "reasons": [
+    "reference_fails",
+    "deepseek_never_passes"
+  ],
+  "gen_cost": 0.00249976,
+  "n_tests": 5,
+  "ref": {
+    "passed": 4,
+    "failed": 1,
+    "errors": 0,
+    "timed_out": false,
+    "all_pass": false
+  },
+  "ref_tail": "...F.\n=================================== FAILURES ===================================\nE   assert (0, 1) == (0, 3)\n      \n      At index 1 diff: 1 != 3\n      Use -v to get more diff\n/private/var/folders/jj/w9ttspy526sb8x5rtj_rz44w0000gn/T/track_a_sbx/t013_ref_63rbavun/test_hidden.py:14: assert (0, 1) == (0, 3)\n=========================== short test summary info ============================\nFAILED test_hidden.py::test_4 - assert (0, 1) == (0, 3)\n1 failed, 4 passed in 0.01s\n",
+  "wrong": {
+    "passed": 4,
+    "failed": 1,
+    "errors": 0,
+    "timed_out": false
+  },
+  "deepseek": [
+    {
+      "ok": true,
+      "passed": 4,
+      "failed": 1,
+      "errors": 0,
+      "all_pass": false,
+      "timed_out": false
+    },
+    {
+      "ok": true,
+      "passed": 4,
+      "failed": 1,
+      "errors": 0,
+      "all_pass": false,
+      "timed_out": false
+    }
+  ]
+}
