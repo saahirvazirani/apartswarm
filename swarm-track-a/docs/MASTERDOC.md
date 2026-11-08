@@ -12,6 +12,9 @@ A; top-3 overall expected"). What remains: human prose, small fill-ins, and four
 automatically.
 
 ## 2. The paper
+- **GOOGLE-DOC PASTE KIT (use this): [paper/REPORT.md](../paper/REPORT.md)** — the full report in template order,
+  section-by-section markdown, with paste markers for the figures in [paper/figures/](../paper/figures/)
+  (fig1_matrix, fig2_mechanism_chain, figA1–A3).
 - [paper/latex/main.tex](../paper/latex/main.tex) → `main.pdf` — THE submission, official Apart template, single
   source. Build: `make pdf`. Peach box at top = your finish checklist (delete before submitting).
 - [paper/numbers_for_prose.md](../paper/numbers_for_prose.md) — every number the prose may quote, with provenance.
