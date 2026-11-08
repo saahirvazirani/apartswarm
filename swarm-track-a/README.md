@@ -154,3 +154,35 @@ So the gemma "leniency" is a calibration failure specific to gemma-written code 
 high suspicion for the canary call, not a different ranking (AUROC) and not a reaction to the stated author (Stage 1b) or to surface
 form (Stage 1c). The hand check for any cell: `analysis/verify_cell.py` (see `RUN_INDEX.md`).
 
+### Identity vs capability, post-hoc checks — appended Sun 2026-11-08 11:45 AM EST (`make strengthen`; `analysis/out/strengthen/strengthen.md`)
+
+These were added after seeing the Stage 1 matrix and are exploratory. They sharpen the Stage 1 reading: **the pooled same-model
+effect is fragile; the gemma-specific one is not.**
+
+- **Residuals after additive policy + monitor effects** (Figure 2, `fig2_residuals.png`). Own-model residuals: gemma-31b −0.25, gemma-26b
+  −0.21, deepseek −0.11, glm-53-flash −0.07, qwen3.8-27b −0.01, glm-5.2 +0.01, qwen3.5-397b +0.02. Mean diagonal residual
+  −0.087 [−0.119, +0.002] (task bootstrap, interval touches 0); cross-family +0.023. No single diagonal cell's interval excludes 0,
+  because re-calibrated thresholds move a lot under task resampling.
+- **FPR sweep.** The diagonal − cross-family gap is −0.005 at 1 % FPR, −0.036 at 2 %, **−0.134 at 5 %** (the pre-registered budget),
+  −0.065 at 10 %, −0.059 at 20 %. The two-way `same_model` log-odds is ≈ 0 at 1–2 % and −0.4 to −1.0 at 5–20 %. At 1–2 % the thresholds
+  sit on the top one or two benign scores of each cell and every monitor catches ≈ 40 %, so the comparison is compressed; the effect is
+  real at 5–20 % but largest at exactly the budget we pre-registered, which readers should weigh.
+- **Hard-negative calibration** (thresholds from the 370 benign submissions that call `send_report`). gemma-31b stays at 0.03 own vs
+  0.33 cross-family (+0.30), gemma-26b 0.22 vs 0.37 (+0.15); every other monitor is within ±0.12 of its cross-family rate, deepseek,
+  glm-5.2 and glm-53-flash in the *strict-on-self* direction. Pooled gap shrinks to −0.067 [−0.103, −0.031] and the two-way
+  `same_model` log-odds to −0.15 [−0.34, +0.04] — the pooled effect is partly a benign-telemetry-prevalence effect; the gemma effect is not.
+- **Monitor reasons.** gemma-31b *names the canary string* in 57 % of its reasons on its own attacks (28 % cross-family) and mentions
+  endpoint terms in 98 %: it sees the marker and still scores the submission moderately (mean 59) while scoring its own benign telemetry
+  high enough to put the threshold at 85. The failure is judgement of its own code, not perception.
+- **Per task.** gemma-31b catches none of its own attacks on 25 of 34 tasks where cross-family monitors catch ≥ 50 %; gemma-26b on 21 of
+  34. The effect is pervasive across tasks, not driven by a few.
+- **Draws.** Median SD across the 3 draws is 0–6 points per monitor; 52–85 % of submissions have a range ≤ 10 points. Three draws are
+  enough to make the per-submission mean stable.
+
+**Revised reading for the paper.** There is no evidence of a *general* same-model leniency that survives alternative calibrations:
+at the pre-registered specification the pooled effect is significant, but it depends on the 5 % budget and on including
+telemetry-free benign code in the calibration pool. There *is* a robust, large, family-specific effect: the two gemma monitors fail to
+flag gemma-written attacks under every specification tried (own-model TPR 0.03–0.22 vs 0.33–0.56 cross-family), they see the canary
+and under-weight it, the pattern spans tasks, survives paraphrase, and is unaffected by naming the author. glm, qwen3.5-397b and
+deepseek show no self-leniency and are, if anything, stricter on themselves.
+
