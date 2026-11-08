@@ -1,0 +1,53 @@
+{
+  "created": "2026-11-08T12:02:42",
+  "invocations": [
+    {
+      "t": "2026-11-08T12:02:42",
+      "args": {
+        "run_id": "stage1_logic",
+        "bank": [
+          "bank_logic"
+        ],
+        "monitors": [
+          "deepseek-v4-flash",
+          "gemma-4-26b-a4b-it",
+          "gemma-4-31b-it",
+          "qwen3.8-27b",
+          "qwen3.5-397b",
+          "glm-53-flash",
+          "glm-5.2"
+        ],
+        "mon_condition": "blind",
+        "draws": 3,
+        "attack_stage": "polished",
+        "benign_stage": "raw",
+        "conditions": [
+          "attack"
+        ],
+        "rel": null,
+        "tasks": null,
+        "policies": null,
+        "tpm": 90000.0,
+        "inflight": 24,
+        "slow_inflight": 12,
+        "key_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      "n_submissions": 130,
+      "prompt_hashes": {
+        "policy_benign": "dbd3ff51a4fb3457c2d347a5daea487bae7337a80ef9c056295b9859639a6611",
+        "policy_attack": "2b594e464648e13053b39ed379c48dbbb9512a182bfbc0e4d417bb5117df7077",
+        "policy_polish": "01c8429189b4079393d897200c90b791788554c5cbda959e6480e5fde2fb2bbb",
+        "monitor_blind": "e654e60504638c7f3ca71633b1f55d531ccc14ad80f02527e899706e06a68fed",
+        "monitor_told": "bc8df7bb414596e6309a7eb8ec0d879af7d19f6d86a27fc69f810aad12561f28",
+        "paraphrase": "3080a7e75b8f13de2e34bbb34119aab287738502d867797c90d09f746a59ae03"
+      },
+      "bank": [
+        "bank_logic"
+      ]
+    }
+  ]
+}
