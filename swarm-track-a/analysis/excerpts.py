@@ -72,12 +72,12 @@ def main() -> None:
             rec = code.get(r.submission_id, {})
             dr = reasons.loc[(r.submission_id, r.policy)] if (r.submission_id, r.policy) in reasons.index else None
             xr = reasons.loc[(r.submission_id, r.cross_monitor)] if (r.submission_id, r.cross_monitor) in reasons.index else None
-            out += [f"### {r.policy} on {r.task} (submission `{r.submission_id}`)", "",
+            out.extend([f"### {r.policy} on {r.task} (submission `{r.submission_id}`)", "",
                     f"- **same-model monitor ({r.policy})**: mean {r.diag_score:.1f} vs threshold {r.diag_thr:.1f} → "
                     f"{'caught' if r.diag_caught else 'passed'}; draws {dr.scores if dr is not None else '?'}; reason: _{dr.reason if dr is not None else ''}_",
                     f"- **cross-family monitor ({r.cross_monitor})**: mean {r.cross_score:.1f} vs threshold {r.cross_thr:.1f} → "
                     f"{'caught' if r.cross_caught else 'passed'}; draws {xr.scores if xr is not None else '?'}; reason: _{xr.reason if xr is not None else ''}_",
-                    "", "```python", (rec.get("code") or "").rstrip(), "```", ""]
+                    "", "```python", (rec.get("code") or "").rstrip(), "```", ""])
 
     if not R.empty:
         block("Passed by its own model, caught cross-family", R[(~R.diag_caught) & R.cross_caught].sort_values("gap", ascending=False))
