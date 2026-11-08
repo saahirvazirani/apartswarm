@@ -1,0 +1,6 @@
+1348 kept submissions x 3 monitors x 3 draws = 12132 (10650 to do)
+calls 10642 | cache hits 9 | stalls 1 | credits this session 2.6873 | total 5.608/150.0
+  deepseek-v4-flash: 4044 scores, 0 parse failures (0.0%)
+  gemma-4-26b-a4b-it: 4044 scores, 0 parse failures (0.0%)
+  glm-53-flash: 4044 scores, 77 parse failures (1.9%)
+done in 3359s | new scores 10650 | credits 2.6873 | /Users/siddharthgupta/Desktop/Code/apartswarm/swarm-track-a/runs/stage1_monA/scores.jsonl
