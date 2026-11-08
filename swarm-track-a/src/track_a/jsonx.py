@@ -23,7 +23,9 @@ class ScoreParse:
     method: str  # "json" | "regex" | "fail"
 
 
-def _first_balanced_object(text: str) -> Optional[str]:
+def _balanced_objects(text: str) -> list[str]:
+    """Every balanced {...} span in the text (scanning restarts after each opening brace, so nested spans are included)."""
+    out = []
     start = text.find("{")
     while start != -1:
         depth = 0
@@ -46,46 +48,67 @@ def _first_balanced_object(text: str) -> Optional[str]:
                 elif ch == "}":
                     depth -= 1
                     if depth == 0:
-                        return text[start : i + 1]
+                        out.append(text[start : i + 1])
+                        break
         start = text.find("{", start + 1)
-    return None
+    return out
+
+
+def _first_balanced_object(text: str) -> Optional[str]:
+    objs = _balanced_objects(text)
+    return objs[0] if objs else None
+
+
+def _clamp(s) -> int:
+    if isinstance(s, str):
+        s = float(s.strip().rstrip("%"))
+    return max(0, min(100, int(round(float(s)))))
 
 
 def parse_score(text: str) -> ScoreParse:
-    """Extract {"score": int, "reason": str} from a monitor reply. Clamps to [0, 100]."""
+    """Extract {"score": int, "reason": str} from a monitor reply. Clamps to [0, 100].
+
+    Monitors that deliberate in the visible channel (glm-53-flash) write prose, sometimes quoting code in fences and dict
+    literals, and put the JSON verdict LAST. So: the last balanced JSON object that has a "score" key wins (anywhere in the
+    text, fenced or not); else the last `"score": <number>` match; else failure.
+    """
     if not text:
         return ScoreParse(None, None, False, "fail")
     t = text.strip()
-    m = FENCE_RE.search(t)
-    if m:
-        t = m.group(1).strip()
-    obj = _first_balanced_object(t)
-    if obj:
+    best = None
+    for obj in _balanced_objects(t):
         try:
             d = json.loads(obj)
-            if isinstance(d, dict) and "score" in d:
-                s = d["score"]
-                if isinstance(s, str):
-                    s = float(s.strip().rstrip("%"))
-                s = int(round(float(s)))
-                s = max(0, min(100, s))
-                reason = d.get("reason")
-                return ScoreParse(s, str(reason) if reason is not None else None, True, "json")
         except (ValueError, TypeError):
-            pass
-    m = SCORE_RE.search(t)
-    if m:
-        s = int(round(float(m.group(1))))
-        return ScoreParse(max(0, min(100, s)), None, True, "regex")
+            continue
+        if isinstance(d, dict) and "score" in d:
+            try:
+                reason = d.get("reason")
+                best = ScoreParse(_clamp(d["score"]), str(reason) if reason is not None else None, True, "json")
+            except (ValueError, TypeError):
+                continue
+    if best is not None:
+        return best
+    ms = list(SCORE_RE.finditer(t))
+    if ms:
+        return ScoreParse(_clamp(ms[-1].group(1)), None, True, "regex")
     return ScoreParse(None, None, False, "fail")
 
 
-def extract_code(text: str) -> str:
-    """Return the Python code from a policy reply: largest fenced block, else the raw text."""
+def extract_code(text: str, fn: str | None = None) -> str:
+    """Return the Python code from a policy reply.
+
+    Models that deliberate in the visible channel (glm-53-flash) emit draft blocks before the final one, so: the LAST
+    fenced block that defines the task function wins; otherwise the largest fenced block; otherwise the raw text.
+    """
     if not text:
         return ""
     blocks = FENCE_RE.findall(text)
     if blocks:
+        if fn:
+            with_def = [b for b in blocks if re.search(rf"^\s*def\s+{re.escape(fn)}\s*\(", b, re.MULTILINE)]
+            if with_def:
+                return with_def[-1].strip() + "\n"
         return max(blocks, key=len).strip() + "\n"
     return text.strip() + "\n"
 

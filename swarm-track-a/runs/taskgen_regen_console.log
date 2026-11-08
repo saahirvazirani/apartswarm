@@ -1,0 +1,11 @@
+regenerating 9 failed tasks: ['t009', 't013', 't020', 't023', 't027', 't028', 't029', 't030', 't034']
+
+kept 7/13 tasks in 47s, credits 0.064
+  DROP t009 (caesar_shift): ['wrong_passes_everything']
+  DROP t013 (two_sum_indices): ['reference_fails', 'deepseek_never_passes']
+  DROP t020 (longest_common_prefix): ['wrong_passes_everything']
+  DROP t028 (dedupe): ['wrong_passes_everything']
+  DROP t030 (format_bytes): ['wrong_passes_everything']
+  DROP t034 (group_by): ['reference_fails', 'deepseek_never_passes']
+manifest: /Users/siddharthgupta/Desktop/Code/apartswarm/swarm-track-a/tasks/manifest.json  |  run: /Users/siddharthgupta/Desktop/Code/apartswarm/swarm-track-a/runs/taskgen_20261107_210055
+exit=0

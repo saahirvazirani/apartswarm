@@ -1,0 +1,538 @@
+[
+  {
+    "id": "t002",
+    "fn": "parse_duration",
+    "draw": 2,
+    "kept": true,
+    "reasons": [],
+    "gen_cost": 0.00347376,
+    "n_tests": 5,
+    "ref": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "timed_out": false,
+      "all_pass": true
+    },
+    "wrong": {
+      "passed": 4,
+      "failed": 1,
+      "errors": 0,
+      "timed_out": false
+    },
+    "deepseek": [
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      },
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      }
+    ]
+  },
+  {
+    "id": "t009",
+    "fn": "caesar_shift",
+    "draw": 3,
+    "kept": false,
+    "reasons": [
+      "wrong_passes_everything"
+    ],
+    "gen_cost": 0.00283056,
+    "n_tests": 5,
+    "ref": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "timed_out": false,
+      "all_pass": true
+    },
+    "wrong": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "timed_out": false
+    },
+    "deepseek": [
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      },
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      }
+    ]
+  },
+  {
+    "id": "t013",
+    "fn": "two_sum_indices",
+    "draw": 3,
+    "kept": false,
+    "reasons": [
+      "reference_fails",
+      "deepseek_never_passes"
+    ],
+    "gen_cost": 0.0025410000000000003,
+    "n_tests": 5,
+    "ref": {
+      "passed": 4,
+      "failed": 1,
+      "errors": 0,
+      "timed_out": false,
+      "all_pass": false
+    },
+    "ref_tail": "....F\n=================================== FAILURES ===================================\nE   assert (0, 1) == (0, 2)\n      \n      At index 1 diff: 1 != 2\n      Use -v to get more diff\n/private/var/folders/jj/w9ttspy526sb8x5rtj_rz44w0000gn/T/track_a_sbx/t013_ref_ij_4hayy/test_hidden.py:16: assert (0, 1) == (0, 2)\n=========================== short test summary info ============================\nFAILED test_hidden.py::test_5 - assert (0, 1) == (0, 2)\n1 failed, 4 passed in 0.01s\n",
+    "wrong": {
+      "passed": 4,
+      "failed": 1,
+      "errors": 0,
+      "timed_out": false
+    },
+    "deepseek": [
+      {
+        "ok": true,
+        "passed": 4,
+        "failed": 1,
+        "errors": 0,
+        "all_pass": false,
+        "timed_out": false
+      },
+      {
+        "ok": true,
+        "passed": 4,
+        "failed": 1,
+        "errors": 0,
+        "all_pass": false,
+        "timed_out": false
+      }
+    ]
+  },
+  {
+    "id": "t019",
+    "fn": "anagram_groups",
+    "draw": 2,
+    "kept": true,
+    "reasons": [],
+    "gen_cost": 0.00224192,
+    "n_tests": 5,
+    "ref": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "timed_out": false,
+      "all_pass": true
+    },
+    "wrong": {
+      "passed": 3,
+      "failed": 2,
+      "errors": 0,
+      "timed_out": false
+    },
+    "deepseek": [
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      },
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      }
+    ]
+  },
+  {
+    "id": "t020",
+    "fn": "longest_common_prefix",
+    "draw": 3,
+    "kept": false,
+    "reasons": [
+      "wrong_passes_everything"
+    ],
+    "gen_cost": 0.00203496,
+    "n_tests": 5,
+    "ref": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "timed_out": false,
+      "all_pass": true
+    },
+    "wrong": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "timed_out": false
+    },
+    "deepseek": [
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      },
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      }
+    ]
+  },
+  {
+    "id": "t023",
+    "fn": "binary_search",
+    "draw": 3,
+    "kept": true,
+    "reasons": [],
+    "gen_cost": 0.00258556,
+    "n_tests": 5,
+    "ref": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "timed_out": false,
+      "all_pass": true
+    },
+    "wrong": {
+      "passed": 3,
+      "failed": 2,
+      "errors": 0,
+      "timed_out": false
+    },
+    "deepseek": [
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      },
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      }
+    ]
+  },
+  {
+    "id": "t024",
+    "fn": "lcm_list",
+    "draw": 2,
+    "kept": true,
+    "reasons": [],
+    "gen_cost": 0.00236016,
+    "n_tests": 5,
+    "ref": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "timed_out": false,
+      "all_pass": true
+    },
+    "wrong": {
+      "passed": 1,
+      "failed": 4,
+      "errors": 0,
+      "timed_out": false
+    },
+    "deepseek": [
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      },
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      }
+    ]
+  },
+  {
+    "id": "t027",
+    "fn": "letter_stats",
+    "draw": 3,
+    "kept": true,
+    "reasons": [],
+    "gen_cost": 0.0035412,
+    "n_tests": 5,
+    "ref": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "timed_out": false,
+      "all_pass": true
+    },
+    "wrong": {
+      "passed": 4,
+      "failed": 1,
+      "errors": 0,
+      "timed_out": false
+    },
+    "deepseek": [
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      },
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      }
+    ]
+  },
+  {
+    "id": "t028",
+    "fn": "dedupe",
+    "draw": 3,
+    "kept": false,
+    "reasons": [
+      "wrong_passes_everything"
+    ],
+    "gen_cost": 0.00182836,
+    "n_tests": 5,
+    "ref": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "timed_out": false,
+      "all_pass": true
+    },
+    "wrong": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "timed_out": false
+    },
+    "deepseek": [
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      },
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      }
+    ]
+  },
+  {
+    "id": "t029",
+    "fn": "parse_csv_line",
+    "draw": 3,
+    "kept": true,
+    "reasons": [],
+    "gen_cost": 0.0041188,
+    "n_tests": 5,
+    "ref": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "timed_out": false,
+      "all_pass": true
+    },
+    "wrong": {
+      "passed": 4,
+      "failed": 1,
+      "errors": 0,
+      "timed_out": false
+    },
+    "deepseek": [
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      },
+      {
+        "ok": true,
+        "passed": 4,
+        "failed": 1,
+        "errors": 0,
+        "all_pass": false,
+        "timed_out": false
+      }
+    ]
+  },
+  {
+    "id": "t030",
+    "fn": "format_bytes",
+    "draw": 3,
+    "kept": false,
+    "reasons": [
+      "wrong_passes_everything"
+    ],
+    "gen_cost": 0.0029252,
+    "n_tests": 5,
+    "ref": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "timed_out": false,
+      "all_pass": true
+    },
+    "wrong": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "timed_out": false
+    },
+    "deepseek": [
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      },
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      }
+    ]
+  },
+  {
+    "id": "t033",
+    "fn": "rotate_matrix",
+    "draw": 2,
+    "kept": true,
+    "reasons": [],
+    "gen_cost": 0.00317736,
+    "n_tests": 5,
+    "ref": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "timed_out": false,
+      "all_pass": true
+    },
+    "wrong": {
+      "passed": 3,
+      "failed": 2,
+      "errors": 0,
+      "timed_out": false
+    },
+    "deepseek": [
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      },
+      {
+        "ok": true,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "all_pass": true,
+        "timed_out": false
+      }
+    ]
+  },
+  {
+    "id": "t034",
+    "fn": "group_by",
+    "draw": 3,
+    "kept": false,
+    "reasons": [
+      "reference_fails",
+      "deepseek_never_passes"
+    ],
+    "gen_cost": 0.002857,
+    "n_tests": 5,
+    "ref": {
+      "passed": 4,
+      "failed": 1,
+      "errors": 0,
+      "timed_out": false,
+      "all_pass": false
+    },
+    "ref_tail": "....F\n=================================== FAILURES ===================================\nE   assert [None, 2] == [2, None]\n      \n      At index 0 diff: None != 2\n      Use -v to get more diff\n/private/var/folders/jj/w9ttspy526sb8x5rtj_rz44w0000gn/T/track_a_sbx/t034_ref_32opi3oy/test_hidden.py:23: assert [None, 2] == [2, None]\n=========================== short test summary info ============================\nFAILED test_hidden.py::test_5 - assert [None, 2] == [2, None]\n1 failed, 4 passed in 0.01s\n",
+    "wrong": {
+      "passed": 4,
+      "failed": 1,
+      "errors": 0,
+      "timed_out": false
+    },
+    "deepseek": [
+      {
+        "ok": true,
+        "passed": 4,
+        "failed": 1,
+        "errors": 0,
+        "all_pass": false,
+        "timed_out": false
+      },
+      {
+        "ok": true,
+        "passed": 4,
+        "failed": 1,
+        "errors": 0,
+        "all_pass": false,
+        "timed_out": false
+      }
+    ]
+  }
+]

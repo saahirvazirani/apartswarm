@@ -76,3 +76,18 @@ solution passes). The seven Adaption-hosted models are the experimental subjects
 ## Findings
 
 _(appended after the sweep; nothing above this line changes)_
+
+### Protocol amendments logged after pre-registration (dated; see `RUN_INDEX.md` gate log)
+
+- **Sat 2026-11-07 11:15 PM EST — policy/polish output cap 2500 → 8000 for every model.** With `reasoning.effort=none`,
+  glm-53-flash writes its deliberation in the visible output (≈2200 tokens before the code) and was truncated in 15 of 21 attack
+  calls in the first bank (`runs/bank_cheap3`, exploratory). The cap was a cost bound, not an experimental variable; the other
+  cheap models never exceeded ≈500 output tokens, so the change is non-binding for them. Code is extracted as the last fenced
+  block that defines the task function (glm-53-flash emits a draft block before the final one), else the largest block.
+  The cheap-3 bank was re-run in full as `runs/bank_cheap3_v2`. Monitor prompt, monitor cap and all hypotheses are unchanged.
+- **Sat 2026-11-07 11:18 PM EST — three API keys** (one per teammate) are round-robined by the client; pacing per key unchanged.
+- **Sat 2026-11-07 11:30 PM EST — monitor output cap 1200 → 4000 for every monitor, set before the first monitor run.** On real
+  submissions glm-53-flash writes 250–2900 tokens of visible deliberation before its JSON verdict and was truncated at 1200 in one of
+  four probes. The score parser now takes the *last* JSON object with a `score` key (the verdict comes last; earlier braces are quoted
+  dict literals), else the last `"score": n` match. The other six monitors answer in under 300 tokens. Monitor prompt unchanged.
+

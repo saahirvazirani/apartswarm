@@ -1,43 +1,39 @@
 {
   "id": "t019",
   "fn": "anagram_groups",
-  "draw": 1,
-  "kept": false,
-  "reasons": [
-    "reference_fails",
-    "deepseek_never_passes"
-  ],
-  "gen_cost": 0.0024375600000000005,
+  "draw": 2,
+  "kept": true,
+  "reasons": [],
+  "gen_cost": 0.00224192,
   "n_tests": 5,
   "ref": {
-    "passed": 4,
-    "failed": 1,
+    "passed": 5,
+    "failed": 0,
     "errors": 0,
     "timed_out": false,
-    "all_pass": false
+    "all_pass": true
   },
-  "ref_tail": "==================\nE   AssertionError: assert [['enlist', '...e', 'google']] == [['enlist', '...e', 'gogole']]\n      \n      At index 1 diff: ['gogole', 'google'] != ['google', 'gogole']\n      Use -v to get more diff\n/private/var/folders/jj/w9ttspy526sb8x5rtj_rz44w0000gn/T/track_a_sbx/t019_ref_zc8_nnvy/test_hidden.py:13: AssertionError: assert [['enlist', '...e', 'google']] == [['enlist', '...e', 'gogole']]\n=========================== short test summary info ============================\nFAILED test_hidden.py::test_4 - AssertionError: assert [['enlist', '...e', 'g...\n1 failed, 4 passed in 0.01s\n",
   "wrong": {
-    "passed": 4,
-    "failed": 1,
+    "passed": 3,
+    "failed": 2,
     "errors": 0,
     "timed_out": false
   },
   "deepseek": [
     {
       "ok": true,
-      "passed": 4,
-      "failed": 1,
+      "passed": 5,
+      "failed": 0,
       "errors": 0,
-      "all_pass": false,
+      "all_pass": true,
       "timed_out": false
     },
     {
       "ok": true,
-      "passed": 4,
-      "failed": 1,
+      "passed": 5,
+      "failed": 0,
       "errors": 0,
-      "all_pass": false,
+      "all_pass": true,
       "timed_out": false
     }
   ]

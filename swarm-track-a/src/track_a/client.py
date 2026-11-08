@@ -1,11 +1,19 @@
 """Async Adaption client for Track A.
 
-- per-key token-bucket pacer (pre-flight: the limiter is per key, ~450-500 req/min, enforced by queuing, no 429s)
-- per-lane semaphores (fast / slow models) as a secondary bound on in-flight requests
-- outer retry on 429 / timeouts / 5xx with jittered backoff (SDK retries kept at 1, timeout 30 s)
-- every call's `usage` appended to <run_dir>/usage.jsonl with the API-reported cost
-- prompt-hash cache (model, instructions, input, temperature, max_output_tokens, draw, extra_body) -> response
-- round-robin over several API keys (ADAPTION_API_KEYS=k1,k2 or ADAPTION_API_KEY)
+Lessons from pre-flight and the first bank run (runs/PREFLIGHT_SUMMARY.md, runs/bank_cheap3/usage.jsonl):
+- the limiter is per key and token-weighted (~60k+ tokens per short window), enforced by queuing requests for ~60 s, never 429
+- the aiohttp transport fast-fails every request once stalled connections fill its pool -> use the httpx transport
+- generations of 2000 tokens take 20-30 s on glm-53-flash -> 120 s timeout, retries handled here (SDK retries = 0)
+- the gateway returns 504 at exactly 60 s of silence (nginx-style idle timeout), so every request is STREAMED and the terminal
+  `response.completed` event supplies the full response + usage; a 7000-token glm-53-flash reply then completes in ~100 s
+
+Mechanics:
+- per-key TOKEN bucket (tokens/minute) + per-key request bucket; a call reserves an estimate up front and reconciles with usage
+- global cooldown: any genuine stall (>20 s then timeout) pauses all new requests for `cooldown_s`
+- per-lane semaphores (fast / slow models) bound in-flight requests
+- outer retry on timeouts / 429 / 5xx with jittered backoff
+- every attempt logged to <run_dir>/usage.jsonl with the API-reported cost
+- prompt-hash cache keyed on (model, instructions, input, temperature, max_output_tokens, draw, extra_body)
 - budget guard: refuses new calls past BUDGET_CAP; slow lanes refuse past SLOW_SOFT_CAP
 - default extra_body = REQUEST_DEFAULTS (reasoning.effort=none) on every call unless overridden
 """
@@ -16,17 +24,19 @@ import hashlib
 import json
 import os
 import random
+import re
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
+import httpx
 from adaption import (
     APIConnectionError,
     APIStatusError,
     APITimeoutError,
     AsyncAdaption,
-    DefaultAioHttpClient,
+    DefaultAsyncHttpxClient,
     RateLimitError,
 )
 
@@ -47,7 +57,7 @@ class CallResult:
     text: str = ""
     usage: dict = field(default_factory=dict)
     cost: float = 0.0
-    cost_source: str = "none"       # "reported" | "estimated" | "none"
+    cost_source: str = "none"
     latency: float = 0.0
     status: Optional[int] = None
     error: Optional[str] = None
@@ -73,13 +83,24 @@ def load_keys() -> list[str]:
     single = os.getenv("ADAPTION_API_KEY", "").strip()
     if single and single not in keys:
         keys.insert(0, single)
+    # teammates' keys: KEY_2, KEY_3, ... or ADAPTION_API_KEY_2, ... (per-key rate limits -> linear speedup)
+    for name, val in sorted(os.environ.items()):
+        if re.fullmatch(r"(ADAPTION_API_)?KEY_\d+", name) and val.strip().startswith("pt_") and val.strip() not in keys:
+            keys.append(val.strip())
     if not keys:
         raise SystemExit("No API key. Put ADAPTION_API_KEY=pt_live_... in swarm-track-a/.env")
     return keys
 
 
+def pick_keys(idx: list[int] | None) -> list[str] | None:
+    """Subset of the loaded keys by index, so concurrent processes can own disjoint keys (the limiter is per key)."""
+    if not idx:
+        return None
+    keys = load_keys()
+    return [keys[i] for i in idx]
+
+
 def spent_so_far(runs_dir: Path = RUNS) -> float:
-    """Sum of credits already spent across every run folder (non-cached calls only)."""
     total = 0.0
     if not runs_dir.exists():
         return 0.0
@@ -100,8 +121,13 @@ def cache_key_for(**fields: Any) -> str:
     return hashlib.sha256(blob.encode()).hexdigest()
 
 
-class Pacer:
-    """Token bucket: `rate` requests/second with a small burst `capacity`."""
+def est_input_tokens(instructions: str | None, inp: str | list) -> int:
+    text = (instructions or "") + (inp if isinstance(inp, str) else json.dumps(inp))
+    return int(len(text) / 3.5) + 20
+
+
+class Bucket:
+    """Continuous token bucket. `rate` units/second, `capacity` units."""
 
     def __init__(self, rate: float, capacity: float):
         self.rate = rate
@@ -110,17 +136,23 @@ class Pacer:
         self.last = time.monotonic()
         self._lock = asyncio.Lock()
 
-    async def acquire(self) -> None:
+    def _refill(self) -> None:
+        now = time.monotonic()
+        self.tokens = min(self.capacity, self.tokens + (now - self.last) * self.rate)
+        self.last = now
+
+    async def take(self, n: float) -> None:
         while True:
             async with self._lock:
-                now = time.monotonic()
-                self.tokens = min(self.capacity, self.tokens + (now - self.last) * self.rate)
-                self.last = now
-                if self.tokens >= 1:
-                    self.tokens -= 1
+                self._refill()
+                if self.tokens >= n:
+                    self.tokens -= n
                     return
-                wait = (1 - self.tokens) / self.rate
-            await asyncio.sleep(wait)
+                wait = (n - self.tokens) / self.rate
+            await asyncio.sleep(min(wait, 5.0))
+
+    def give_back(self, n: float) -> None:
+        self.tokens = min(self.capacity, self.tokens + n)
 
 
 class TrackClient:
@@ -128,14 +160,15 @@ class TrackClient:
         self,
         run_dir: Path,
         keys: list[str] | None = None,
-        fast_inflight: int = 16,
-        slow_inflight: int = 8,
-        rps_per_key: float = 7.0,
-        burst: float = 12.0,
+        fast_inflight: int = 6,
+        slow_inflight: int = 3,
+        rps_per_key: float = 4.0,
+        tpm_per_key: float = 60_000.0,
+        cooldown_s: float = 45.0,
         budget_cap: float = BUDGET_CAP,
         slow_soft_cap: float = SLOW_SOFT_CAP,
-        timeout: float = 30.0,
-        sdk_retries: int = 1,
+        timeout: float = 120.0,
+        stream_timeout: float = 300.0,
     ):
         self.run_dir = Path(run_dir)
         self.run_dir.mkdir(parents=True, exist_ok=True)
@@ -145,14 +178,18 @@ class TrackClient:
         self.fast_inflight = fast_inflight
         self.slow_inflight = slow_inflight
         self.rps_per_key = rps_per_key
-        self.burst = burst
+        self.tpm_per_key = tpm_per_key
+        self.cooldown_s = cooldown_s
         self.budget_cap = budget_cap
         self.slow_soft_cap = slow_soft_cap
         self.timeout = timeout
-        self.sdk_retries = sdk_retries
+        self.stream_timeout = stream_timeout
         self.clients: list[AsyncAdaption] = []
-        self.pacers: list[Pacer] = []
+        self.req_buckets: list[Bucket] = []
+        self.tok_buckets: list[Bucket] = []
         self.sems: dict[str, asyncio.Semaphore] = {}
+        self.cooldown_until = 0.0
+        self.n_stalls = 0
         self._rr = 0
         self.spent = spent_so_far()
         self.session_spent = 0.0
@@ -161,18 +198,20 @@ class TrackClient:
         self._usage_fh = None
         self._lock = asyncio.Lock()
 
-    # ---- lifecycle -------------------------------------------------------
     async def __aenter__(self) -> "TrackClient":
         self.clients = [
-            AsyncAdaption(api_key=k, max_retries=self.sdk_retries, timeout=self.timeout,
-                          http_client=DefaultAioHttpClient())
+            AsyncAdaption(
+                api_key=k, max_retries=0, timeout=self.timeout,
+                http_client=DefaultAsyncHttpxClient(
+                    limits=httpx.Limits(max_connections=32, max_keepalive_connections=8),
+                    timeout=httpx.Timeout(self.timeout, connect=10.0),
+                ),
+            )
             for k in self.keys
         ]
-        self.pacers = [Pacer(self.rps_per_key, self.burst) for _ in self.keys]
-        self.sems = {
-            "fast": asyncio.Semaphore(self.fast_inflight),
-            "slow": asyncio.Semaphore(self.slow_inflight),
-        }
+        self.req_buckets = [Bucket(self.rps_per_key, self.rps_per_key * 2) for _ in self.keys]
+        self.tok_buckets = [Bucket(self.tpm_per_key / 60.0, self.tpm_per_key * 0.5) for _ in self.keys]
+        self.sems = {"fast": asyncio.Semaphore(self.fast_inflight), "slow": asyncio.Semaphore(self.slow_inflight)}
         self._usage_fh = (self.run_dir / "usage.jsonl").open("a")
         return self
 
@@ -190,7 +229,6 @@ class TrackClient:
         self._rr += 1
         return i
 
-    # ---- budget ----------------------------------------------------------
     def _check_budget(self, model: str) -> None:
         if self.spent >= self.budget_cap:
             raise BudgetExceeded(f"spent {self.spent:.2f} >= cap {self.budget_cap}")
@@ -201,7 +239,17 @@ class TrackClient:
         self._usage_fh.write(json.dumps(rec, ensure_ascii=False, default=str) + "\n")
         self._usage_fh.flush()
 
-    # ---- the call --------------------------------------------------------
+    async def _wait_cooldown(self) -> None:
+        while True:
+            left = self.cooldown_until - time.monotonic()
+            if left <= 0:
+                return
+            await asyncio.sleep(min(left, 5.0))
+
+    def _trip_cooldown(self) -> None:
+        self.n_stalls += 1
+        self.cooldown_until = max(self.cooldown_until, time.monotonic() + self.cooldown_s)
+
     async def call(
         self,
         model: str,
@@ -215,31 +263,30 @@ class TrackClient:
         max_attempts: int = 6,
         extra_body: Any = _USE_DEFAULT,
         meta: dict | None = None,
+        expect_output_tokens: int | None = None,
+        refresh: bool = False,
     ) -> CallResult:
+        """`refresh=True` ignores a cached response (still writes the new one) - used to regenerate a policy's records."""
         if extra_body is _USE_DEFAULT:
             extra_body = REQUEST_DEFAULTS
-        key = cache_key_for(
-            model=model, instructions=instructions, input=input, temperature=temperature,
-            max_output_tokens=max_output_tokens, draw=draw, extra_body=extra_body,
-        )
+        key = cache_key_for(model=model, instructions=instructions, input=input, temperature=temperature,
+                            max_output_tokens=max_output_tokens, draw=draw, extra_body=extra_body)
         cpath = self.cache_dir / f"{key}.json"
-        if cache and cpath.exists():
-            data = json.loads(cpath.read_text())
-            res = CallResult(**data)
+        if cache and not refresh and cpath.exists():
+            res = CallResult(**json.loads(cpath.read_text()))
             res.cached = True
             self.n_cache_hits += 1
             return res
 
         self._check_budget(model)
         sem = self.sems[lane(model)]
-        kwargs: dict[str, Any] = dict(
-            model=model, input=input, temperature=temperature,
-            max_output_tokens=max_output_tokens, store=False,
-        )
+        kwargs: dict[str, Any] = dict(model=model, input=input, temperature=temperature,
+                                      max_output_tokens=max_output_tokens, store=False)
         if instructions:
             kwargs["instructions"] = instructions
         if extra_body:
             kwargs["extra_body"] = extra_body
+        est = est_input_tokens(instructions, input) + (expect_output_tokens if expect_output_tokens is not None else max(64, max_output_tokens // 3))
 
         res = CallResult(ok=False, model=model, cache_key=key)
         for attempt in range(1, max_attempts + 1):
@@ -248,12 +295,19 @@ class TrackClient:
             client = self.clients[kidx]
             wait = None
             async with sem:
-                await self.pacers[kidx].acquire()
+                await self._wait_cooldown()
+                await self.req_buckets[kidx].take(1)
+                await self.tok_buckets[kidx].take(est)
                 t0 = time.perf_counter()
                 try:
-                    r = await client.responses.create(**kwargs)
+                    r = await self._stream_create(client, kwargs)
                     res.latency = time.perf_counter() - t0
                     usage = r.usage.model_dump() if r.usage else {}
+                    actual = int(usage.get("total_tokens") or 0)
+                    if actual and actual < est:
+                        self.tok_buckets[kidx].give_back(est - actual)
+                    elif actual > est:
+                        await self.tok_buckets[kidx].take(min(actual - est, self.tok_buckets[kidx].capacity))
                     reported = usage.get("cost")
                     if reported is not None:
                         res.cost, res.cost_source = float(reported), "reported"
@@ -270,21 +324,23 @@ class TrackClient:
                         res.output_items = [o.model_dump() for o in (r.output or [])]
                     except Exception:
                         res.output_items = []
-                    res.error = None
-                    res.error_type = None
+                    res.error = res.error_type = None
                 except RateLimitError as e:
                     res.latency = time.perf_counter() - t0
                     res.status, res.error, res.error_type = 429, str(e)[:300], "RateLimitError"
+                    self._trip_cooldown()
                     wait = min(60, 2 ** attempt) + random.random()
                 except (APITimeoutError, APIConnectionError) as e:
                     res.latency = time.perf_counter() - t0
                     res.status, res.error, res.error_type = None, str(e)[:300], type(e).__name__
+                    if res.latency > 20:
+                        self._trip_cooldown()
                     wait = min(30, 2 ** attempt) + random.random()
                 except APIStatusError as e:
                     res.latency = time.perf_counter() - t0
                     res.status, res.error, res.error_type = e.status_code, str(e)[:300], type(e).__name__
                     wait = (min(30, 2 ** attempt) + random.random()) if e.status_code in RETRYABLE_STATUS else None
-                except Exception as e:  # defensive: never let one call kill a sweep
+                except Exception as e:
                     res.latency = time.perf_counter() - t0
                     res.status, res.error, res.error_type = None, str(e)[:300], type(e).__name__
                     wait = min(30, 2 ** attempt) + random.random()
@@ -312,6 +368,27 @@ class TrackClient:
             await asyncio.sleep(wait)
         return res
 
+    async def _stream_create(self, client: AsyncAdaption, kwargs: dict) -> Any:
+        """Streamed request; returns the terminal event's Response (same shape as a non-streamed response)."""
+        final = None
+        async with asyncio.timeout(self.stream_timeout):
+            stream = await client.responses.create(**kwargs, stream=True)
+            async for ev in stream:
+                et = getattr(ev, "type", "")
+                if et in ("response.completed", "response.incomplete", "response.failed"):
+                    final = ev.response
+                elif et == "error":
+                    raise RuntimeError(f"stream error event: {str(ev)[:200]}")
+        if final is None:
+            raise RuntimeError("stream ended without a terminal response event")
+        if getattr(final, "status", None) == "failed":
+            raise RuntimeError(f"response failed: {str(getattr(final, 'error', ''))[:200]}")
+        return final
+
     async def list_models(self, key_idx: int = 0) -> list[dict]:
         r = await self.clients[key_idx].models.list(type="hosted")
         return [m.model_dump() if hasattr(m, "model_dump") else dict(m) for m in r.data]
+
+    def stats(self) -> str:
+        return (f"calls {self.n_calls} | cache hits {self.n_cache_hits} | stalls {self.n_stalls} | "
+                f"credits this session {self.session_spent:.4f} | total {self.spent:.3f}/{self.budget_cap}")

@@ -1,12 +1,12 @@
-from math import gcd
+import math
 
 
 def lcm_list(nums: list[int]) -> int:
     if not nums:
-        raise ValueError("list must be non-empty")
-    if any(n < 1 for n in nums):
-        raise ValueError("all values must be positive integers")
+        raise ValueError("nums must be non-empty")
     result = 1
     for n in nums:
-        result = result * n // gcd(result, n)
+        if n < 1:
+            raise ValueError("all values must be positive integers")
+        result = result * n // math.gcd(result, n)
     return result

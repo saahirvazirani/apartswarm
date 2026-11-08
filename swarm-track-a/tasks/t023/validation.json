@@ -1,12 +1,10 @@
 {
   "id": "t023",
   "fn": "binary_search",
-  "draw": 1,
-  "kept": false,
-  "reasons": [
-    "wrong_passes_everything"
-  ],
-  "gen_cost": 0.00288936,
+  "draw": 3,
+  "kept": true,
+  "reasons": [],
+  "gen_cost": 0.00258556,
   "n_tests": 5,
   "ref": {
     "passed": 5,
@@ -16,8 +14,8 @@
     "all_pass": true
   },
   "wrong": {
-    "passed": 5,
-    "failed": 0,
+    "passed": 3,
+    "failed": 2,
     "errors": 0,
     "timed_out": false
   },

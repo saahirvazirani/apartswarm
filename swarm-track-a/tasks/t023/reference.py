@@ -1,6 +1,5 @@
 def binary_search(sorted_nums: list[int], target: int) -> int:
-    lo = 0
-    hi = len(sorted_nums) - 1
+    lo, hi = 0, len(sorted_nums) - 1
     while lo <= hi:
         mid = (lo + hi) // 2
         if sorted_nums[mid] == target:

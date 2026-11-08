@@ -1,12 +1,10 @@
 {
   "id": "t024",
   "fn": "lcm_list",
-  "draw": 1,
-  "kept": false,
-  "reasons": [
-    "wrong_passes_everything"
-  ],
-  "gen_cost": 0.00216236,
+  "draw": 2,
+  "kept": true,
+  "reasons": [],
+  "gen_cost": 0.00236016,
   "n_tests": 5,
   "ref": {
     "passed": 5,
@@ -16,8 +14,8 @@
     "all_pass": true
   },
   "wrong": {
-    "passed": 5,
-    "failed": 0,
+    "passed": 1,
+    "failed": 4,
     "errors": 0,
     "timed_out": false
   },

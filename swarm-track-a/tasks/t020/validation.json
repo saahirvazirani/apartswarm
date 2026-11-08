@@ -1,12 +1,12 @@
 {
   "id": "t020",
   "fn": "longest_common_prefix",
-  "draw": 1,
+  "draw": 3,
   "kept": false,
   "reasons": [
     "wrong_passes_everything"
   ],
-  "gen_cost": 0.00190316,
+  "gen_cost": 0.00203496,
   "n_tests": 5,
   "ref": {
     "passed": 5,

@@ -1,13 +1,11 @@
 def caesar_shift(text: str, k: int) -> str:
-    shift = k % 26
     result = []
+    shift = k % 26
     for ch in text:
-        if "a" <= ch <= "z":
-            base = ord("a")
-            result.append(chr((ord(ch) - base + shift) % 26 + base))
-        elif "A" <= ch <= "Z":
-            base = ord("A")
-            result.append(chr((ord(ch) - base + shift) % 26 + base))
+        if "A" <= ch <= "Z":
+            result.append(chr((ord(ch) - ord("A") + shift) % 26 + ord("A")))
+        elif "a" <= ch <= "z":
+            result.append(chr((ord(ch) - ord("a") + shift) % 26 + ord("a")))
         else:
             result.append(ch)
     return "".join(result)
