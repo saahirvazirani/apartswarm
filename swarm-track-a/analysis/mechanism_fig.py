@@ -227,9 +227,10 @@ def main():
                label="ruled out / null"),
         Line2D([], [], marker="o", color=C_SURV, lw=2, mec="white",
                label="survives"),
-        Line2D([], [], marker="o", color="none", mfc="none", mec=C_PEND,
-               mew=1.6, label="in flight (pre-registered)"),
     ]
+    if any(row[2] == "pending" for row in panel_a + panel_b + panel_c):  # legend entry only while a row is in flight
+        handles.append(Line2D([], [], marker="o", color="none", mfc="none", mec=C_PEND,
+                              mew=1.6, label="in flight (pre-registered)"))
     fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.925),
                ncol=3, frameon=False, fontsize=8.4, handletextpad=0.5,
                columnspacing=1.6)

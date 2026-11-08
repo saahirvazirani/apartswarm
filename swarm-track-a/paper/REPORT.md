@@ -126,7 +126,7 @@ zero. By contrast the gemma self-leniency survives every scheme. Under tie-robus
 cross-family mean. A post-hoc gemma-block decomposition makes this inferential: the gemma-policy × gemma-monitor block
 has OR **0.29 [0.19, 0.45]** (p = 3.8e-8, surviving any correction over the seven per-monitor comparisons), while the
 non-gemma diagonal is a precise null (OR 1.08 [0.78, 1.47], p = 0.65). Under matched FPR the pooled gap is −0.080
-[−0.152, −0.003]. The effect also survives held-out calibration: thresholds set on half the benign tasks keep realized
+[−0.152, −0.003]. A pre-registered expanded-calibration run (tripling the benign set behind the gemma thresholds) was still in flight at writing time; its result is posted to the repository either way. The effect also survives held-out calibration: thresholds set on half the benign tasks keep realized
 FPR at 0.053 on the other half, and the pooled cross-minus-diagonal gap is 0.110 [0.005, 0.187] over 200 splits
 (gemma-31b own-cell 0.16 vs 0.71 cross).
 
@@ -155,8 +155,9 @@ rewrite every submission produces no writer-specific blind spot (−1.0 [−6.0,
 (deepseek, pre-registered to close the gemma-flavoured-paraphrase confound) likewise leaves the deficit: after it
 rewrites every gemma submission, the gemma own-model cells still catch 0.24 versus 0.51 cross-family
 (diagonal-specific score delta −3.3 [−7.3, +0.4]). Removing the sanctioned-telemetry sentence from the monitor-visible task text (Stage 1g) pushes every
-score toward the ceiling, yet the own-vs-cross deficit remains at matched FPR (0.19 vs 0.75 on gemma-26b attacks, 0.10
-vs 0.35 on gemma-31b's) — the blind spot does not depend on the planted excuse. Nor is it a fast-judgment artifact: re-scoring with the monitor's reasoning enabled (Stage 1f,
+score toward the ceiling, yet the own-vs-cross deficit remains at matched FPR (0.19 vs 0.75 on gemma-26b attacks under the sibling monitor, 0.10
+vs 0.35 on gemma-31b's own; the two rows' gaps move oppositely, 0.34 → 0.56 and 0.46 → 0.25, both remaining large) —
+the blind spot does not depend on the planted excuse. Nor is it a fast-judgment artifact (Stage 1f, 1,202/1,203 draws): re-scoring with the monitor's reasoning enabled (Stage 1f,
 pre-registered) leaves the own-cell matched-FPR catch unchanged (0.19 vs 0.20) and worsens the sibling cell (0.17 vs
 0.38), while collapsing absolute suspicion on gemma code by ~54 points — deliberation talks the monitor out of its
 suspicion rather than into it. The excuse vocabulary of misses is kinship-independent (§4.3). Raw
@@ -227,7 +228,7 @@ held-out split keeps realized FPR at 0.053 and preserves the deficit, though cel
 noise (gemma-31b diagonal 0.03 in-sample, 0.16 held-out mean, 0.20 matched-FPR — the direction is stable, the exact
 cell value is not the claim). The effect is one lineage (two checkpoints) in one task distribution; the
 sanctioned-telemetry sentence that prevents ceiling effects is a design patch both policies and monitors see, and a pre-registered ablation removing the sentence from the monitor's view left the
-deficit intact at matched FPR (§4.4), though all scores compress toward the ceiling without it. Reasoning was disabled on every call; output caps were raised after pre-registration
+deficit intact at matched FPR (§4.4), though all scores compress toward the ceiling without it. Reasoning was disabled on every call except the pre-registered Stage 1f probe (§4.4); output caps were raised after pre-registration
 (dated, non-binding for five of seven models). glm-5.2 is both a subject and the task generator (the identity contrast
 is within-row). There is no seed parameter, so resamples are temperature draws; every response is stored and every
 number recomputes. The git history was linearized by a rebase before submission; author timestamps and per-run usage
