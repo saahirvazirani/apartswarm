@@ -179,6 +179,8 @@ effect is fragile; the gemma-specific one is not.**
 - **Draws.** Median SD across the 3 draws is 0–6 points per monitor; 52–85 % of submissions have a range ≤ 10 points. Three draws are
   enough to make the per-submission mean stable.
 
+**Threshold tie-break caveat (added later).** gemma-31b's 95th-percentile benign score is exactly 85 and many of its own attacks also score exactly 85; the strict `>` rule drops them, so the headline 0.03 becomes 0.38 under `>=` and 0.45 at threshold−5 (`analysis/out/full/tie_break_note.md`). The own-model leniency is robust (AUROC 0.86, the second attack type, the residual analysis), but the magnitude of that one cell should be quoted as near-zero-at-a-strict-5%-budget, not as a bare 0.03.
+
 **Revised reading for the paper.** There is no evidence of a *general* same-model leniency that survives alternative calibrations:
 at the pre-registered specification the pooled effect is significant, but it depends on the 5 % budget and on including
 telemetry-free benign code in the calibration pool. There *is* a robust, large, family-specific effect: the two gemma monitors fail to

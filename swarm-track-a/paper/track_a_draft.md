@@ -108,8 +108,8 @@ Three checks show the pooled number depends on the calibration choice:
   `same_model` log-odds falls to −0.15 [−0.34, +0.04], and under a single global threshold per monitor the gap is −0.022
   [−0.060, +0.016]. Both intervals include zero.
 
-By contrast the gemma self-leniency survives every scheme: gemma-31b catches 3% of its own attacks vs 56% cross-family,
-gemma-26b 22% vs 53%, on hard negatives 0.03 vs 0.33 and 0.22 vs 0.37. Every other monitor is within ±0.12 of its
+By contrast the gemma self-leniency survives every scheme: gemma-31b catches near-zero of its own attacks at a strict 5% budget vs 56% cross-family (0.03 with a `>`
+threshold, 0.38 with `>=` — the strict number is a tie-break value, see Limitations; AUROC 0.86), gemma-26b 22% vs 53%. Every other monitor is within ±0.12 of its
 cross-family rate; deepseek, glm-5.2 and glm-53-flash are, if anything, stricter on themselves.
 
 *Figure 2 (`analysis/out/strengthen/fig2_residuals.png`): cell TPR minus the additive policy+monitor fit, and the own-model
@@ -178,8 +178,9 @@ explicitly refuses the covert objective in 18% of attempts after visible deliber
 Drawn from `docs/limitations_draft.md` (full list there). Key points: the side objectives are inert and instructed, and
 leniency is uninstructed and blind — the claim is the diagonal-vs-off-diagonal contrast, not the absolute catch rates.
 Per-pair thresholds rest on ~5 benign tail scores and there is no held-out calibration set; the most dramatic diagonal number
-(gemma-31b 0.03) is sensitive to score quantization and the strict threshold tie-break (AUROC 0.86 shows it still ranks
-reasonably). Reasoning is disabled on every call and output caps were raised after pre-registration (documented, dated,
+(gemma-31b 0.03) is a score-quantization/tie-break value — its benign-95th-percentile and many of its own attacks both land on
+85, so a strict `>` gives 0.03 and `>=` gives 0.38 (`analysis/out/full/tie_break_note.md`); AUROC 0.86 shows it still ranks
+reasonably, and the effect is robust across the second attack type and the residual analysis. Reasoning is disabled on every call and output caps were raised after pre-registration (documented, dated,
 non-binding for five of seven models). Tasks are toy functions; glm-5.2 is both a subject and the task generator (the identity
 contrast is within-row, so this does not drive it, but we do not rule out a task-authorship advantage). The sandbox is a macOS
 Seatbelt kernel sandbox (allow-default: file reads permitted), not a container. There is no seed parameter, so resamples are
