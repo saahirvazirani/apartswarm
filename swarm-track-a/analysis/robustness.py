@@ -18,7 +18,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from calibrate import FAMILY, MODEL_ORDER, cells, load_scores, per_submission  # noqa: E402
+from calibrate import FAMILY, MODEL_ORDER, cells, filter_attack_stage, load_scores, per_submission  # noqa: E402
 from fit import build_units, glm_fit, task_bootstrap  # noqa: E402
 
 
@@ -28,11 +28,12 @@ def main() -> None:
     ap.add_argument("--out", required=True)
     ap.add_argument("--fpr", type=float, default=0.05)
     ap.add_argument("--boots", type=int, default=1000)
+    ap.add_argument("--attack-stage", default="polished", choices=["polished", "raw", "paraphrased"])
     args = ap.parse_args()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     df = load_scores([Path(p) for p in args.scores])
-    df = df[df.mon_condition == "blind"]
+    df = filter_attack_stage(df[df.mon_condition == "blind"], args.attack_stage)
     sub = per_submission(df)
     c = cells(sub, args.fpr)
     c = c[c.n_attack > 0]

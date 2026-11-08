@@ -67,6 +67,8 @@ async def main() -> None:
     ap.add_argument("--draws", type=int, default=N_DRAWS)
     ap.add_argument("--attack-stage", choices=["polished", "raw", "paraphrased"], default="polished")
     ap.add_argument("--benign-stage", choices=["raw", "paraphrased"], default="raw")
+    ap.add_argument("--conditions", nargs="+", choices=["benign", "attack"], default=["benign", "attack"],
+                    help="score only these conditions (e.g. attack-only when benign scores already exist in another run)")
     ap.add_argument("--rel", nargs="*", choices=["same_model", "same_family", "cross_family"], default=None,
                     help="score only (policy, monitor) pairs with these relationships (default all)")
     ap.add_argument("--tasks", nargs="*")
@@ -85,6 +87,7 @@ async def main() -> None:
     bank_dirs = [RUNS / b for b in args.bank]
     tasks = load_tasks()
     subs = select_submissions(bank_dirs, args.attack_stage, set(args.tasks or []) or None, set(args.policies or []) or None, args.benign_stage)
+    subs = [s_ for s_ in subs if s_["condition"] in args.conditions]
     scores_path = run_dir / "scores.jsonl"
     done = load_scores(scores_path)
     meta_path = run_dir / "meta.json"

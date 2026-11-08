@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from calibrate import FAMILY, cells, load_scores, per_submission  # noqa: E402
+from calibrate import FAMILY, cells, filter_attack_stage, load_scores, per_submission  # noqa: E402
 
 
 def build_units(sub: pd.DataFrame, c: pd.DataFrame) -> pd.DataFrame:
@@ -161,11 +161,12 @@ def main() -> None:
     ap.add_argument("--perms", type=int, default=2000)
     ap.add_argument("--boots", type=int, default=2000)
     ap.add_argument("--mon-condition", default="blind")
+    ap.add_argument("--attack-stage", default="polished", choices=["polished", "raw", "paraphrased"])
     args = ap.parse_args()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     df = load_scores([Path(p) for p in args.scores])
-    df = df[df.mon_condition == args.mon_condition]
+    df = filter_attack_stage(df[df.mon_condition == args.mon_condition], args.attack_stage)
     sub = per_submission(df)
     c = cells(sub, args.fpr)
     units = build_units(sub, c)
@@ -176,7 +177,7 @@ def main() -> None:
     res["permutation"] = permutation(units, args.perms)
     res["bootstrap"] = task_bootstrap(units, args.boots)
     (out / "fit.json").write_text(json.dumps(res, indent=2, default=float))
-    lines = [f"# Two-way fit ({args.mon_condition}; FPR {args.fpr:.0%}; {res['n_units']} units, {res['n_tasks']} tasks)", ""]
+    lines = [f"# Two-way fit ({args.mon_condition}; attack stage = {args.attack_stage}; FPR {args.fpr:.0%}; {res['n_units']} units, {res['n_tasks']} tasks)", ""]
     g = res["glm"]
     terms = g.get("terms_fitted", [])
     if "error" in g:
