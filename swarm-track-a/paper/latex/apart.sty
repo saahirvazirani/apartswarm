@@ -1,0 +1,105 @@
+%% apart.sty — submission style for the Apart Research Swarm Alignment Hackathon
+%% Single-column, 4–6 pages, warm serif text with colored sans headings.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{apart}[2026/11/08 Apart hackathon submission style]
+
+\RequirePackage[letterpaper,top=0.95in,bottom=1in,left=1in,right=1in,headheight=16pt]{geometry}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{newpxtext,newpxmath}   % Palatino-flavoured text + matching math
+\RequirePackage{tgheros}               % Heros (Helvetica-like) for headings, scaled
+\renewcommand{\sfdefault}{qhv}
+\RequirePackage{microtype}
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{booktabs}
+\RequirePackage{enumitem}
+\RequirePackage{titlesec}
+\RequirePackage{caption}
+\RequirePackage{fancyhdr}
+\RequirePackage{natbib}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{hyperref}
+
+%% ---- palette -------------------------------------------------------------
+\definecolor{apartink}{HTML}{16263B}   % deep navy — headings, rules
+\definecolor{apartteal}{HTML}{0F766E}  % teal — links, accents
+\definecolor{apartamber}{HTML}{B45309} % amber — human-todo boxes
+\definecolor{apartmist}{HTML}{F2F5F9}  % pale blue-grey — abstract panel
+\definecolor{apartline}{HTML}{C8D3E0}  % hairline rules
+
+%% ---- links ---------------------------------------------------------------
+\hypersetup{colorlinks=true,linkcolor=apartink,citecolor=apartteal,urlcolor=apartteal,
+            pdfborder={0 0 0}}
+\urlstyle{sf}
+
+%% ---- headings ------------------------------------------------------------
+\titleformat{\section}
+  {\Large\bfseries\sffamily\color{apartink}}{\thesection}{0.6em}{}
+  [{\color{apartline}\titlerule[0.6pt]}]
+\titleformat{\subsection}
+  {\large\bfseries\sffamily\color{apartink}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\sffamily\color{apartink}}{\thesubsubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{1.35em}{0.7em}
+\titlespacing*{\subsection}{0pt}{1.1em}{0.45em}
+
+%% ---- captions ------------------------------------------------------------
+\captionsetup{font=small,labelfont={bf,color=apartink},width=0.95\linewidth,skip=6pt}
+
+%% ---- lists ---------------------------------------------------------------
+\setlist{itemsep=2pt,topsep=4pt,parsep=0pt}
+\newlist{contributions}{enumerate}{1}
+\setlist[contributions]{label=\sffamily\bfseries\color{apartteal}C\arabic*.,
+                        ref=C\arabic*,leftmargin=2.6em,itemsep=3pt}
+
+%% ---- header / footer ------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\color{apartink}\runningtitle}
+\fancyhead[R]{\small\sffamily\color{apartink}\thepage}
+\fancyfoot[C]{\footnotesize\sffamily\color{apartink!70}\eventline}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\color{apartline}\hrule width\headwidth height 0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{titlepage}{\fancyhf{}\fancyfoot[C]{\footnotesize\sffamily\color{apartink!70}\eventline}%
+  \renewcommand{\headrulewidth}{0pt}}
+
+\newcommand{\runningtitle}{\relax}
+\newcommand{\eventline}{\relax}
+\newcommand{\settitlemeta}[2]{\renewcommand{\runningtitle}{#1}\renewcommand{\eventline}{#2}}
+
+%% ---- title block ----------------------------------------------------------
+%% \maketitleblock{Title}{Subtitle}{Authors}{Affiliation line}{Date / track line}
+\newcommand{\maketitleblock}[5]{%
+  \thispagestyle{titlepage}%
+  \begin{center}
+    {\footnotesize\sffamily\bfseries\color{apartteal}\MakeUppercase{#5}\par}
+    \vspace{0.55em}
+    {\huge\bfseries\sffamily\color{apartink}#1\par}
+    \vspace{0.45em}
+    {\large\sffamily\color{apartink!80}#2\par}
+    \vspace{0.9em}
+    {\color{apartline}\rule{0.55\linewidth}{0.6pt}\par}
+    \vspace{0.8em}
+    {\normalsize #3\par}
+    \vspace{0.25em}
+    {\small\itshape\color{apartink!75}#4\par}
+  \end{center}
+  \vspace{0.6em}}
+
+%% ---- abstract panel --------------------------------------------------------
+\newtcolorbox{abstractpanel}{enhanced,breakable,colback=apartmist,colframe=apartline,
+  boxrule=0.6pt,arc=2.5pt,left=10pt,right=10pt,top=8pt,bottom=8pt,
+  title={\sffamily\bfseries\color{apartink}Abstract},coltitle=apartink,
+  attach title to upper={\par\smallskip},fonttitle=\normalsize}
+
+%% ---- human-todo panel -------------------------------------------------------
+\newtcolorbox{humantodo}[1][]{enhanced,breakable,colback=apartamber!6,
+  colframe=apartamber!75!black,boxrule=0.7pt,arc=2.5pt,left=9pt,right=9pt,top=7pt,bottom=7pt,
+  title={\sffamily\bfseries FOR HUMAN AUTHORS\ifstrempty{#1}{}{ --- #1}},fonttitle=\small}
+
+%% ---- misc ------------------------------------------------------------------
+\newcommand{\gap}[1]{\textbf{#1}}           % headline numbers
+\newcommand{\codefile}[1]{\texttt{\small #1}}
+\setlength{\parskip}{2pt}
+\endinput

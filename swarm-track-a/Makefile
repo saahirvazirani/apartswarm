@@ -56,3 +56,6 @@ human-anchor:
 
 budget:
 	PYTHONPATH=src $(PY) -m track_a.budget | head -1
+
+pdf:  ## build the submission PDF (tectonic)
+	cd paper/latex && tectonic main.tex

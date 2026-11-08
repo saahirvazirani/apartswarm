@@ -121,9 +121,11 @@ def global_threshold_gap(sub: pd.DataFrame, fpr: float, boots: int, out: Path) -
              f"- same-model catch {att[att.rel=='same_model'].caught.mean():.3f}, same-family {att[att.rel=='same_family'].caught.mean():.3f}, "
              f"cross-family {att[att.rel=='cross_family'].caught.mean():.3f}",
              f"- diagonal − cross-family {obs:+.3f} [{np.percentile(bs,2.5):+.3f}, {np.percentile(bs,97.5):+.3f}] (task bootstrap)",
-             "", "The gap is of the same sign and magnitude under a global threshold as under per-pair calibration, so it is not an artifact "
-             "of per-pair thresholds. The AUROC matrix (`analysis/out/full/matrix.md`) is the fully threshold-free view; there the diagonal "
-             "dip is ≤ 0.02–0.03, i.e. the effect is an operating-point (calibration) phenomenon, consistent across both threshold schemes."]
+             "", "Under a single global threshold the pooled diagonal−cross gap shrinks toward zero and its interval includes zero, and the "
+             "AUROC matrix (`analysis/out/full/matrix.md`) shows a diagonal dip of ≤ 0.02–0.03: the large pooled gap is therefore substantially "
+             "a per-pair-calibration (operating-point) effect, not a ranking effect. The family-specific leniency is what survives across "
+             "schemes — the gemma own-family cells stay far below their cross-family counterparts under per-pair thresholds, hard-negative "
+             "calibration and the residual analysis (`analysis/out/strengthen/strengthen.md`)."]
     return lines
 
 
