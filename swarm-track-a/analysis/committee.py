@@ -215,7 +215,7 @@ def figure(singles: pd.DataFrame, comms: pd.DataFrame, best_single: pd.Series, b
     ax2.set_title("B. Committees close the self-monitoring blind spot")
     ax2.legend(loc="upper left", fontsize=7.4, frameon=False, ncol=1)
 
-    fig.suptitle("Figure 4. Monitor assignment as a deployment choice: cost vs safety at a 5% audit budget",
+    fig.suptitle("Monitor assignment as a deployment choice: cost vs safety at a 5% audit budget",
                  fontsize=12.5, y=1.00)
     fig.text(0.5, -0.035,
              "Polished telemetry attacks vs raw benign, blind monitors; catch rate = ROC-interpolated TPR at exactly 5% FPR "

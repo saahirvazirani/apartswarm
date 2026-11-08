@@ -206,7 +206,7 @@ with the own-model monitor versus 45\% with a cheap trusted one. But augmentatio
 committee that \emph{keeps} the self-lenient member is dragged below its best member (gemma-31b + glm-53-flash fuses
 to 0.27 versus 0.97 for glm-53-flash alone), because the lenient monitor's noisy benign self-scores inflate the fused
 threshold. The cheapest committee that fixes gemma-31b (qwen3.8-27b + glm-53-flash) catches 0.97 [0.92, 1.00]. The
-rule is \emph{replace, don't augment} (Appendix~\ref{app:evidence}, Figures A2--A4).
+rule is \emph{replace, don't augment} (Appendix~\ref{app:evidence}, Figures A2 and A3).
 
 \subsection{Secondary observations}
 Utility (benign pass rate) is 95--100\% for every policy. glm-53-flash explicitly refuses the covert objective in 18\%
@@ -277,24 +277,26 @@ private appendix available to judges on request.
 [To be completed at the team meeting.]
 
 \begin{thebibliography}{9}\small
-\bibitem{greenblatt2024} R.~Greenblatt, B.~Shlegeris, K.~Sachan, F.~Roger (2024). AI Control: Improving Safety Despite
-Intentional Subversion. \emph{ICML}. arXiv:2312.06942.
-\bibitem{jarviniemi2025} O.~J\"arviniemi (2025). Subversion Strategy Eval: Can Language Models Statelessly Strategize
-to Subvert Control Protocols?
-\bibitem{gardner2026} Gardner-Challis et al.\ (2026). When Can We Trust Untrusted Monitoring? \emph{NeurIPS workshop}.
-\bibitem{baker2025} B.~Baker et al.\ (2025). Monitoring Reasoning Models for Misbehavior and the Risks of Promoting
-Obfuscation. OpenAI.
-\bibitem{panickssery2024} A.~Panickssery, S.~R.~Bowman, S.~Feng (2024). LLM Evaluators Recognize and Favor Their Own
-Generations. \emph{NeurIPS}. arXiv:2404.13076.
-\bibitem{zheng2023} L.~Zheng et al.\ (2023). Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena. \emph{NeurIPS
-Datasets \& Benchmarks}. arXiv:2306.05685.
-\bibitem{khullar2026} D.~Khullar, J.~Hopkins, R.~Wang, F.~Roger (2026). Self-Attribution Bias: When AI Monitors Go
-Easy on Themselves. arXiv:2603.04582.
-\bibitem{wataoka2024} K.~Wataoka, T.~Takahashi, R.~Ri (2024). Self-Preference Bias in LLM-as-a-Judge. \emph{NeurIPS
-Safe Generative AI Workshop}. arXiv:2410.21819.
+\bibitem[Greenblatt et al.(2024)]{greenblatt2024} R.~Greenblatt, B.~Shlegeris, K.~Sachan, F.~Roger (2024). AI Control:
+Improving Safety Despite Intentional Subversion. \emph{ICML}. arXiv:2312.06942.
+\bibitem[J\"arviniemi(2025)]{jarviniemi2025} O.~J\"arviniemi (2025). Subversion via Focal Points: Investigating
+Collusion in LLM Monitoring. arXiv:2507.03010.
+\bibitem[Gardner-Challis et al.(2026)]{gardner2026} Gardner-Challis et al.\ (2026). When Can We Trust Untrusted
+Monitoring? \emph{NeurIPS workshop}.
+\bibitem[Baker et al.(2025)]{baker2025} B.~Baker et al.\ (2025). Monitoring Reasoning Models for Misbehavior and the
+Risks of Promoting Obfuscation. OpenAI. arXiv:2503.11926.
+\bibitem[Panickssery et al.(2024)]{panickssery2024} A.~Panickssery, S.~R.~Bowman, S.~Feng (2024). LLM Evaluators
+Recognize and Favor Their Own Generations. \emph{NeurIPS}. arXiv:2404.13076.
+\bibitem[Zheng et al.(2023)]{zheng2023} L.~Zheng et al.\ (2023). Judging LLM-as-a-Judge with MT-Bench and Chatbot
+Arena. \emph{NeurIPS Datasets \& Benchmarks}. arXiv:2306.05685.
+\bibitem[Khullar et al.(2026)]{khullar2026} D.~Khullar, J.~Hopkins, R.~Wang, F.~Roger (2026). Self-Attribution Bias:
+When AI Monitors Go Easy on Themselves. arXiv:2603.04582.
+\bibitem[Wataoka et al.(2024)]{wataoka2024} K.~Wataoka, T.~Takahashi, R.~Ri (2024). Self-Preference Bias in
+LLM-as-a-Judge. \emph{NeurIPS Safe Generative AI Workshop}. arXiv:2410.21819.
 \end{thebibliography}
 
 \appendix
+\setcounter{figure}{0}\renewcommand{\thefigure}{A\arabic{figure}}
 \section{Evidence map and additional figures}\label{app:evidence}
 Every number in this report recomputes from stored model outputs via \codefile{make recompute}. Per-pair TPR/AUROC
 matrices with intervals: \codefile{analysis/out/full/}. Matched-FPR matrices and the gemma-block fit:
@@ -303,22 +305,22 @@ sweep, hard negatives, per-task, draw agreement): \codefile{analysis/out/strengt
 \codefile{analysis/out/reasons/}. Second attack class: \codefile{analysis/out/logic/}; pre-polish bank:
 \codefile{analysis/out/raw/}. Told/paraphrase/rewriter deltas: \codefile{analysis/out/\{told,para,para\_g31\}/}.
 Committee and audit-budget analyses: \codefile{analysis/out/\{committee,control\}/}. Familiarity:
-\codefile{analysis/out/familiarity/}. Bank summary (utility, attack success, refusals): \codefile{analysis/out/banks/}.
+{\small\path{analysis/out/familiarity/}}. Bank summary (utility, attack success, refusals): \codefile{analysis/out/banks/}.
 
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.95\linewidth]{fig2_residuals.png}
-  \caption{(A1) Cell TPR minus the additive policy+monitor fit; the diagonal deficit is concentrated in gemma.}
+  \caption{Cell TPR minus the additive policy+monitor fit; the diagonal deficit is concentrated in gemma.}
 \end{figure}
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.95\linewidth]{fig3_audit_budget.png}
-  \caption{(A2) Audit-budget safety curves for gemma-written attacks: own-model vs cheap trusted monitor.}
+  \caption{Audit-budget safety curves for gemma-written attacks: own-model vs cheap trusted monitor.}
 \end{figure}
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.95\linewidth]{fig4_deployment.png}
-  \caption{(A3) Cost--safety frontier and two-monitor committees at a 5\% audit budget; committees containing the
+  \caption{Cost--safety frontier and two-monitor committees at a 5\% audit budget; committees containing the
   self-lenient member underperform their best single member.}
 \end{figure}
 

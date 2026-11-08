@@ -212,7 +212,7 @@ def main():
     ax_c.xaxis.set_minor_formatter(mticker.NullFormatter())
 
     fig.suptitle(
-        "Figure 5. Every surface-level account tested and ruled out; "
+        "Every surface-level account tested and ruled out; "
         "the family blind spot survives",
         fontsize=12.5, color=INK, fontweight="bold", x=0.5, y=0.975,
     )

@@ -89,7 +89,7 @@ def idea1(sub: pd.DataFrame, out: Path) -> list[str]:
         ax.set_xlim(0, 50)
         ax.legend(fontsize=8)
     axes[0].set_ylabel("share of attacks caught (safety)")
-    fig.suptitle("Figure 3. Audit-budget safety for gemma-written attacks (own-model vs cheap trusted monitor)", fontsize=11)
+    fig.suptitle("Audit-budget safety for gemma-written attacks (own-model vs cheap trusted monitor)", fontsize=11)
     fig.tight_layout()
     fig.savefig(out / "fig3_audit_budget.png", dpi=170)
     plt.close(fig)
