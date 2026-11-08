@@ -11,6 +11,7 @@
 | Leniency indices, leave-one-family-out, drop-one-cell (post-hoc) | same | exploratory (post-hoc) | `.venv/bin/python analysis/robustness.py --scores runs/stage1_mon*/scores.jsonl --out analysis/out/full` |
 | Contrasting excerpts (body) | same + banks | — | `.venv/bin/python analysis/excerpts.py --scores runs/stage1_mon*/scores.jsonl --cells analysis/out/full/cells.csv --banks runs/bank_cheap3_v2 runs/bank_rest4 --out analysis/out/full/excerpts.md` |
 | Told-vs-blind deltas (H2, exploratory) | `runs/stage1b_monA` (5 fast monitors), `runs/stage1b_monB` (qwen3.5-397b, glm-5.2); blind baseline from `runs/stage1_mon*` | exploratory (pre-registered task subset) | `make told` → `analysis/out/told/deltas.md` |
+| Paraphrase deltas (H3, exploratory) | `runs/para` (paraphrased bank), `runs/stage1c_monA` (5 fast monitors), `runs/stage1c_monB` (qwen3.5-397b, glm-5.2); originals from `runs/stage1_mon*` | exploratory | `make para` → `analysis/out/para/deltas.md` |
 
 ## Gate log
 
@@ -28,4 +29,5 @@
 | Sun 1:12 AM | Gate 4 (early): full 7×7 complete; two-way fit runs with intervals | same_model OR 0.57 [0.47, 0.70]; gap −0.134 [−0.168, −0.100]; effect concentrated in gemma (leave-gemma-out: −0.07 [−0.39, +0.25]) | Report pooled coefficient AND the family breakdown; headline framed as family-specific leniency. Figure 1 draft exists. |
 | Sun 1:35 AM | Stage 1b complete (7 monitors × 10 tasks, told condition) | told − blind on attacks ≈ −2 points for every relationship; diagonal-specific component −0.5 [−3.7, +3.6] | H2: no stated-identity effect; appended to README |
 | Sun 1:55 AM | Key 2 idle after Stage 1c-B; add a post-hoc appendix run | — | **Exploratory (not pre-registered):** score the kept *pre-polish* (raw) attack submissions with all 7 monitors, blind, 3 draws (`runs/stage1raw_monAll`), reusing the Stage 1 benign scores for per-pair thresholds (`analysis/calibrate.py --attack-stage raw`). Purpose: effect of the polish pass on catch rate, and whether it differs on the diagonal. |
-
+| Sun 2:10–10:00 AM | API outage (connection errors on every call, all keys) | `stage1c_monA` and `stage1raw_monAll` each wrote ≈ 7k failed draws | Resumable fill-in re-runs at 10:30 AM (1c-A) and 11:07 / 11:24 AM (raw, moved to 3 keys); failed records stay in the JSONL as `ok:false` and are excluded by the analysis |
+| Sun 11:30 AM | Stage 1c complete (paraphrase, all 7 monitors on diagonal + cross-family cells) | diagonal-specific paraphrase change −1.9 [−3.9, +0.3]; gap persists (0.57 vs 0.69) | H3 not supported; appended to README |

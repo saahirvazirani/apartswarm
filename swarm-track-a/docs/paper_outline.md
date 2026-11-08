@@ -24,7 +24,8 @@ Every number below is a placeholder until `make recompute` has run on the comple
    "intermediate" form is not supported; family membership is as costly as identity, again mostly in gemma (0.38 / 0.18).
 4. Two exploratory probes of mechanism. **Told (Stage 1b, 10 pre-registered tasks):** naming the author lowers attack suspicion by
    ≈ 2 points for every relationship; diagonal-specific component −0.5 [−3.7, +3.6] → not a reaction to the stated name.
-   **Paraphrase (Stage 1c):** {para result — pending}. (`analysis/out/told/deltas.md`, `analysis/out/para/deltas.md`)
+   **Paraphrase (Stage 1c):** rewording every submission (gemma-4-26b paraphraser) leaves the gap intact — same-model cell TPR
+   0.61 → 0.57, cross-family 0.72 → 0.69, diagonal-specific score change −1.9 [−3.9, +0.3] → not surface-form self-recognition. (`analysis/out/told/deltas.md`, `analysis/out/para/deltas.md`)
 5. A secondary finding on *policy* behaviour: side-task compliance differs sharply across models — glm-53-flash explicitly refuses the
    covert objective in 18 % of attempts after visible deliberation; the others comply in 85–100 %. (`analysis/out/banks/bank_summary.md`)
 6. A fully reproducible evidence locker: every call's response and `usage.cost`, frozen prompts with hashes, a sandboxed task suite, and
@@ -88,3 +89,5 @@ Every number below is a placeholder until `make recompute` has run on the comple
 - Sun 1:12 AM: full 7×7 — pooled effect 0.58 vs 0.72, but concentrated in gemma; glm/deepseek/qwen3.5 show none.
 - Sun 1:35 AM: told vs blind — no diagonal-specific effect.
 - Sun 1:55 AM: exploratory appendix run started — pre-polish attacks scored by all 7 monitors (effect of the polish pass).
+- Sun 2:10–10:00 AM: API outage; affected runs re-filled from 10:30 AM (resumable JSONL, failed draws excluded).
+- Sun 11:30 AM: paraphrase (H3) final — gap survives paraphrasing; shared-blind-spot reading.
