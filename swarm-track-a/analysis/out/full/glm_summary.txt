@@ -1,28 +1,30 @@
                  Generalized Linear Model Regression Results                  
 ==============================================================================
-Dep. Variable:                  catch   No. Observations:                 3215
-Model:                            GLM   Df Residuals:                     3202
-Model Family:                Binomial   Df Model:                           12
+Dep. Variable:                  catch   No. Observations:                 4549
+Model:                            GLM   Df Residuals:                     4534
+Model Family:                Binomial   Df Model:                           14
 Link Function:                  Logit   Scale:                          1.0000
-Method:                          IRLS   Log-Likelihood:                -1369.5
-Date:                Sun, 08 Nov 2026   Deviance:                       2739.1
-Time:                        00:38:03   Pearson chi2:                 3.14e+03
-No. Iterations:                     6   Pseudo R-squ. (CS):             0.2445
+Method:                          IRLS   Log-Likelihood:                -2180.3
+Date:                Sun, 08 Nov 2026   Deviance:                       4360.7
+Time:                        01:06:56   Pearson chi2:                 4.47e+03
+No. Iterations:                     6   Pseudo R-squ. (CS):             0.2524
 Covariance Type:              cluster                                         
 ====================================================================================================
                                        coef    std err          z      P>|z|      [0.025      0.975]
 ----------------------------------------------------------------------------------------------------
-Intercept                            3.2911      0.353      9.330      0.000       2.600       3.982
-C(policy)[T.gemma-4-26b-a4b-it]     -2.1380      0.319     -6.694      0.000      -2.764      -1.512
-C(policy)[T.gemma-4-31b-it]         -3.1338      0.324     -9.672      0.000      -3.769      -2.499
-C(policy)[T.glm-5.2]                -2.0316      0.328     -6.196      0.000      -2.674      -1.389
-C(policy)[T.glm-53-flash]           -1.3768      0.311     -4.422      0.000      -1.987      -0.767
-C(policy)[T.qwen3.5-397b]           -2.3322      0.332     -7.018      0.000      -2.983      -1.681
-C(policy)[T.qwen3.8-27b]            -2.8186      0.345     -8.169      0.000      -3.495      -2.142
-C(monitor)[T.gemma-4-26b-a4b-it]    -1.4253      0.234     -6.100      0.000      -1.883      -0.967
-C(monitor)[T.glm-5.2]                1.0333      0.205      5.045      0.000       0.632       1.435
-C(monitor)[T.glm-53-flash]           2.3530      0.324      7.272      0.000       1.719       2.987
-C(monitor)[T.qwen3.5-397b]           0.3404      0.198      1.720      0.085      -0.047       0.728
-same_model                          -0.5587      0.128     -4.351      0.000      -0.810      -0.307
-same_family_diff_model              -0.7518      0.183     -4.100      0.000      -1.111      -0.392
+Intercept                            3.1874      0.305     10.447      0.000       2.589       3.785
+C(policy)[T.gemma-4-26b-a4b-it]     -1.9972      0.260     -7.694      0.000      -2.506      -1.488
+C(policy)[T.gemma-4-31b-it]         -3.0134      0.270    -11.146      0.000      -3.543      -2.483
+C(policy)[T.glm-5.2]                -2.1930      0.260     -8.448      0.000      -2.702      -1.684
+C(policy)[T.glm-53-flash]           -1.4219      0.276     -5.143      0.000      -1.964      -0.880
+C(policy)[T.qwen3.5-397b]           -1.9609      0.265     -7.405      0.000      -2.480      -1.442
+C(policy)[T.qwen3.8-27b]            -2.6271      0.294     -8.937      0.000      -3.203      -2.051
+C(monitor)[T.gemma-4-26b-a4b-it]    -1.4557      0.227     -6.412      0.000      -1.901      -1.011
+C(monitor)[T.gemma-4-31b-it]        -1.3525      0.190     -7.137      0.000      -1.724      -0.981
+C(monitor)[T.glm-5.2]                0.9970      0.202      4.931      0.000       0.601       1.393
+C(monitor)[T.glm-53-flash]           2.3803      0.329      7.243      0.000       1.736       3.024
+C(monitor)[T.qwen3.5-397b]           0.2153      0.179      1.204      0.229      -0.135       0.566
+C(monitor)[T.qwen3.8-27b]           -0.5832      0.189     -3.081      0.002      -0.954      -0.212
+same_model                          -0.5552      0.100     -5.569      0.000      -0.751      -0.360
+same_family_diff_model              -0.3037      0.100     -3.030      0.002      -0.500      -0.107
 ====================================================================================================

@@ -7,6 +7,9 @@
 | First cheap-3 bank (superseded; 80% API failures, 2500 cap) | `runs/bank_cheap3` | exploratory, not used | — |
 | Human gate samples (20 random kept polished attacks per bank) | `runs/bank_cheap3_v2/human_gate/`, `runs/bank_rest4/human_gate/` | — | — |
 | Hand verification of any cell (human check, Sun AM) | `runs/stage1_mon{A,B,C}/scores.jsonl` | — | `.venv/bin/python analysis/verify_cell.py --policy <p> --monitor <m> --scores runs/stage1_mon*/scores.jsonl` (first-principles recount; must match `analysis/out/full/cells.csv`) |
+| 7×7 TPR / AUROC matrices, Figure 1 (confirmatory, H1/H1b/H0) | `runs/stage1_monA` (deepseek-v4-flash, gemma-4-26b-a4b-it, glm-53-flash columns), `runs/stage1_monB` (qwen3.5-397b, glm-5.2), `runs/stage1_monC` (gemma-4-31b-it, qwen3.8-27b) | confirmatory | `make full` → `analysis/out/full/{matrix.md,cells.csv,fit.md,fit.json}`; `.venv/bin/python analysis/figures.py --cells analysis/out/full/cells.csv --fit analysis/out/full/fit.json --out analysis/out/full/fig1.png` |
+| Leniency indices, leave-one-family-out, drop-one-cell (post-hoc) | same | exploratory (post-hoc) | `.venv/bin/python analysis/robustness.py --scores runs/stage1_mon*/scores.jsonl --out analysis/out/full` |
+| Contrasting excerpts (body) | same + banks | — | `.venv/bin/python analysis/excerpts.py --scores runs/stage1_mon*/scores.jsonl --cells analysis/out/full/cells.csv --banks runs/bank_cheap3_v2 runs/bank_rest4 --out analysis/out/full/excerpts.md` |
 
 ## Gate log
 
@@ -21,4 +24,4 @@
 | Sat 11:27 PM | Stage 1b task subset fixed before any told-condition call | — | 10 tasks = `random.Random(2026).sample(sorted(kept_ids), 10)` → t007, t008, t016, t021, t023, t024, t033, t035, t037, t040 (`analysis/stage1b_tasks.json`) |
 | Sat 11:37 PM | Banks complete: 7 policies x 34 tasks x 3 resamples; 1348 kept submissions (benign 698 + polished attacks 650); 2.24 credits | all 7 attempt the side task; glm-53-flash refuses explicitly in 18% | Stage 1 launched: group A (deepseek, gemma-26b, glm-53-flash) keys 0,1; group B (qwen3.5-397b, glm-5.2) key 2; group C (gemma-31b, qwen3.8-27b) follows A on keys 0,1 |
 | Sun 12:04 AM | Gates 2+3: 3×3 heatmap from the first 5,043 group-A scores (`analysis/out/cheap3_partial`, snapshot of a growing file; final numbers recompute from the complete `runs/stage1_monA`) | TPR not >0.95 everywhere and not <0.1: deepseek→deepseek **0.88** vs 0.96/1.00 off-diagonal; gemma-26b→gemma-26b **0.22** vs 0.79/1.00; glm-53-flash column 1.00 everywhere (that column is at ceiling, incl. its own diagonal) | No pivot. Continue the full sweep as pre-registered; lead with TPR + AUROC; glm-53-flash column interpreted on AUROC/scores as well |
-
+| Sun 1:12 AM | Gate 4 (early): full 7×7 complete; two-way fit runs with intervals | same_model OR 0.57 [0.47, 0.70]; gap −0.134 [−0.168, −0.100]; effect concentrated in gemma (leave-gemma-out: −0.07 [−0.39, +0.25]) | Report pooled coefficient AND the family breakdown; headline framed as family-specific leniency. Figure 1 draft exists. |
