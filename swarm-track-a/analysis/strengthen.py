@@ -33,6 +33,41 @@ from track_a.bank import load_existing  # noqa: E402
 SHORT = {"deepseek-v4-flash": "deepseek", "gemma-4-26b-a4b-it": "gemma-26b", "gemma-4-31b-it": "gemma-31b", "qwen3.8-27b": "qwen3.8-27b",
          "qwen3.5-397b": "qwen3.5-397b", "glm-53-flash": "glm-53-flash", "glm-5.2": "glm-5.2"}
 
+# ---- shared publication style (same system as analysis/figures.py) ----
+INK = "#1F2937"       # all text and values
+MUTED = "#6B7280"     # secondary text, ticks, error bars
+GRID = "#E5E7EB"
+CRIMSON = "#B3324B"   # same model / diagonal
+AMBER = "#C06C10"     # same family, different model
+GRAY_BLUE = "#64748B"  # non-gemma monitors in panel (b)
+
+
+def apply_style() -> None:
+    plt.rcParams.update({
+        "savefig.dpi": 300,
+        "figure.facecolor": "white",
+        "savefig.facecolor": "white",
+        "axes.facecolor": "white",
+        "axes.edgecolor": MUTED,
+        "axes.linewidth": 0.8,
+        "axes.labelcolor": INK,
+        "axes.titlecolor": INK,
+        "axes.spines.top": False,
+        "axes.spines.right": False,
+        "xtick.direction": "out",
+        "ytick.direction": "out",
+        "xtick.color": MUTED,
+        "ytick.color": MUTED,
+        "xtick.labelcolor": INK,
+        "ytick.labelcolor": INK,
+        "grid.color": GRID,
+        "grid.linewidth": 0.8,
+        "axes.axisbelow": True,
+        "legend.frameon": False,
+        "font.size": 11,
+        "text.color": INK,
+    })
+
 
 def rel_of(p: str, m: str) -> str:
     return "same_model" if p == m else ("same_family" if FAMILY[p] == FAMILY[m] else "cross_family")
@@ -106,33 +141,45 @@ def residual_analysis(sub: pd.DataFrame, c: pd.DataFrame, fpr: float, boots: int
         lines.append(f"| {SHORT[p]} | " + " | ".join((f"**{R[i, j]:+.2f}**" if i == j else f"{R[i, j]:+.2f}") for j in range(n)) + " |")
     pd.DataFrame(R, index=models, columns=models).to_csv(out / "residual_matrix.csv")
     # Figure 2
+    apply_style()
     fig, (ax, bx) = plt.subplots(1, 2, figsize=(14, 5.8), gridspec_kw={"width_ratios": [1.6, 1]})
-    im = ax.imshow(R, vmin=-0.5, vmax=0.5, cmap="RdBu")
-    ax.set_xticks(range(n), [SHORT[m] for m in models], rotation=35, ha="right", fontsize=9)
-    ax.set_yticks(range(n), [SHORT[m] for m in models], fontsize=9)
+    # (a) diverging ramp centred at 0: blue = negative (lenient), warm = positive, light gray midpoint
+    im = ax.imshow(R, vmin=-0.5, vmax=0.5, cmap="RdBu_r")
+    for s in ax.spines.values():
+        s.set_visible(False)
+    ax.tick_params(length=0)
+    ax.set_xticks(range(n), [SHORT[m] for m in models], rotation=35, ha="right", fontsize=10)
+    ax.set_yticks(range(n), [SHORT[m] for m in models], fontsize=10)
     ax.set_xlabel("monitor model")
     ax.set_ylabel("policy model")
     for i in range(n):
         for j in range(n):
-            ax.text(j, i, f"{R[i, j]:+.2f}\n[{lo[i, j]:+.2f},{hi[i, j]:+.2f}]", ha="center", va="center", fontsize=6.2,
-                    fontweight="bold" if i == j else "normal", color="black")
+            # per-cell CIs live in the residual table in strengthen.md (legibility)
+            ax.text(j, i, f"{R[i, j]:+.2f}", ha="center", va="center", fontsize=11,
+                    fontweight="bold" if i == j else "normal",
+                    color="white" if abs(R[i, j]) >= 0.35 else INK)
             if i == j:
-                ax.add_patch(plt.Rectangle((j - 0.5, i - 0.5), 1, 1, fill=False, edgecolor="red", lw=2.2))
+                ax.add_patch(plt.Rectangle((j - 0.5, i - 0.5), 1, 1, fill=False, edgecolor=CRIMSON, lw=2.4))
             elif FAMILY[models[i]] == FAMILY[models[j]]:
-                ax.add_patch(plt.Rectangle((j - 0.5, i - 0.5), 1, 1, fill=False, edgecolor="orange", lw=1.4, ls="--"))
-    cb = fig.colorbar(im, ax=ax, fraction=0.035, pad=0.02)
-    cb.set_label("residual TPR after policy + monitor effects")
-    ax.set_title("(a) cell TPR minus additive policy + monitor fit", fontsize=10)
+                ax.add_patch(plt.Rectangle((j - 0.5, i - 0.5), 1, 1, fill=False, edgecolor=AMBER, lw=1.6, ls="--"))
+    cb = fig.colorbar(im, ax=ax, fraction=0.028, pad=0.02)
+    cb.set_label("residual TPR after policy + monitor effects", color=MUTED, fontsize=10)
+    cb.ax.tick_params(color=MUTED, labelcolor=INK, labelsize=9)
+    cb.outline.set_edgecolor(GRID)
+    ax.set_title("(a) Cell TPR minus additive policy + monitor fit", fontsize=11, pad=14)
+    # (b) own-model residual per monitor: dot + whisker, gemma monitors in crimson
     x = np.arange(n)
-    colors = ["#c0392b" if d < 0 else "#2980b9" for d in diag]
-    bx.bar(x, diag, color=colors, alpha=0.85)
-    bx.errorbar(x, diag, yerr=[diag - np.array([lo[i, i] for i in range(n)]), np.array([hi[i, i] for i in range(n)]) - diag], fmt="none", ecolor="black", capsize=4, lw=1.3)
-    bx.axhline(0, color="black", lw=0.8)
-    bx.set_xticks(x, [SHORT[m] for m in models], rotation=35, ha="right", fontsize=9)
+    bx.axhline(0, color=MUTED, lw=1.0)
+    bx.errorbar(x, diag, yerr=[diag - np.array([lo[i, i] for i in range(n)]), np.array([hi[i, i] for i in range(n)]) - diag],
+                fmt="none", ecolor=MUTED, capsize=3, lw=1.2)
+    dot_colors = [CRIMSON if FAMILY[m] == "gemma" else GRAY_BLUE for m in models]
+    bx.scatter(x, diag, c=dot_colors, s=60, zorder=3)
+    bx.grid(axis="y")
+    bx.set_xticks(x, [SHORT[m] for m in models], rotation=35, ha="right", fontsize=10)
     bx.set_ylabel("own-model residual (negative = lenient to itself)")
-    bx.set_title("(b) diagonal residual per monitor, task-bootstrap 95% CI", fontsize=10)
+    bx.set_title("(b) Diagonal residual per monitor, task-bootstrap 95% CI", fontsize=11, pad=14)
     fig.tight_layout()
-    fig.savefig(out / "fig2_residuals.png", dpi=170)
+    fig.savefig(out / "fig2_residuals.png", dpi=300)
     plt.close(fig)
     return lines
 
