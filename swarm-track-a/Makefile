@@ -1,6 +1,6 @@
 # Recompute every number and figure in the paper from runs/ (CLAUDE.md rule 10).
 PY := .venv/bin/python
-STAGE1 := $(wildcard runs/stage1_*/scores.jsonl)
+STAGE1 := $(wildcard runs/stage1_mon*/scores.jsonl)  # mon* only: stage1_logic must NOT leak into the telemetry matrix (bug found Sun ~4:45 PM, see RUN_INDEX)
 STAGE1B := $(wildcard runs/stage1b_*/scores.jsonl)
 STAGE1C := $(wildcard runs/stage1c_*/scores.jsonl)
 RAW := $(wildcard runs/stage1raw_*/scores.jsonl)
