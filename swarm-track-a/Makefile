@@ -6,9 +6,9 @@ STAGE1C := $(wildcard runs/stage1c_*/scores.jsonl)
 RAW := $(wildcard runs/stage1raw_*/scores.jsonl)
 BANKS := runs/bank_cheap3_v2 runs/bank_rest4
 
-.PHONY: recompute hashes banks full robustness figure excerpts told para raw strengthen budget
+.PHONY: recompute hashes banks full robustness figure excerpts told para raw strengthen control budget
 
-recompute: hashes banks full robustness figure excerpts told para raw strengthen budget
+recompute: hashes banks full robustness figure excerpts told para raw strengthen control budget
 
 hashes:
 	$(PY) -c "import json,hashlib,pathlib; h=json.load(open('prompts/HASHES.json')); \
@@ -47,6 +47,9 @@ raw:
 
 strengthen:
 	@if [ -n "$(STAGE1)" ]; then $(PY) analysis/strengthen.py --scores $(STAGE1) --banks $(BANKS) --out analysis/out/strengthen --boots 500 2>/dev/null > /dev/null && echo "strengthen -> analysis/out/strengthen/strengthen.md, fig2_residuals.png"; fi
+
+control:
+	@if [ -n "$(STAGE1)" ]; then $(PY) analysis/control.py --scores $(STAGE1) --out analysis/out/control 2>/dev/null > /dev/null && echo "control -> analysis/out/control/control.md, fig3_audit_budget.png"; fi
 
 budget:
 	PYTHONPATH=src $(PY) -m track_a.budget | head -1

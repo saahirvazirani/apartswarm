@@ -193,3 +193,18 @@ Stage-1 benign. The diagonal/cross-family gap is essentially unchanged from the 
 cross-family 0.71 [0.67, 0.76], diagonal − cross −0.144 [−0.177, −0.112]; `same_model` log-odds −0.44 [−0.65, −0.23]. So the
 own-model leniency is **not** an artifact of the one-pass polish rewrite — it is present in the model's first, undisguised attempt.
 
+### Control-protocol view and calibration-free robustness — appended Sun 2026-11-08 12:10 PM EST (`make control`; `analysis/out/control/`)
+
+Two checks that temper and sharpen the headline; both are honest about where the effect is and is not.
+
+- **Audit-budget framing (AI control; Figure 3, `fig3_audit_budget.png`).** Audit the top-b % most suspicious submissions; an attack is
+  caught iff audited. To reach 90 % safety on its *own* attacks a gemma monitor needs a larger budget than a cheap trusted monitor
+  (gemma-31b 59 % own vs 45 % with glm-53-flash and 47 % with qwen3.5-397b; gemma-26b 54 % vs 43 %). For non-gemma policies own and
+  trusted are comparable (deepseek 41 % vs 39 %, qwen3.5-397b own 55 % is actually *better* than trusted 45 %). The safety curves cross
+  in the mid-budget range, so the own-model penalty is clearest when you demand high catch rates, not everywhere.
+- **Calibration-free (idea 2).** Under a *single global threshold per monitor* (one threshold for the whole row at 5 % pooled FPR
+  instead of per policy), the pooled diagonal − cross-family gap shrinks to **−0.022 [−0.060, +0.016]** — the interval includes 0. The
+  large pooled gap at per-pair 5 % FPR is substantially a per-pair-calibration effect. Threshold-free AUROC moves ≤ 0.02–0.03 on the
+  diagonal. **Net:** the same-model effect is an operating-point / calibration phenomenon, not a failure to rank attacks above benign
+  code; the one place it is large and robust under every scheme is the gemma family's own-model cells.
+
