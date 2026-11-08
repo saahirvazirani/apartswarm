@@ -1,0 +1,93 @@
+{
+  "n_units": 770,
+  "n_tasks": 34,
+  "n_policies": 3,
+  "n_monitors": 3,
+  "rel_counts": {
+    "cross_family": 514,
+    "same_model": 256
+  },
+  "glm": {
+    "terms_fitted": [
+      "same_model"
+    ],
+    "same_model": {
+      "coef": -1.9870499688201715,
+      "se": 0.3690005915415061,
+      "p": 7.246453470611443e-08,
+      "ci95": [
+        -2.710277838515499,
+        -1.2638220991248441
+      ],
+      "odds_ratio": 0.1370992766066043,
+      "or_ci95": [
+        0.06651832279530442,
+        0.28257194192787183
+      ]
+    },
+    "n": 770,
+    "summary": "                 Generalized Linear Model Regression Results                  \n==============================================================================\nDep. Variable:                  catch   No. Observations:                  770\nModel:                            GLM   Df Residuals:                      764\nModel Family:                Binomial   Df Model:                            5\nLink Function:                  Logit   Scale:                          1.0000\nMethod:                          IRLS   Log-Likelihood:                -238.16\nDate:                Sun, 08 Nov 2026   Deviance:                       476.33\nTime:                        00:04:59   Pearson chi2:                     518.\nNo. Iterations:                    24   Pseudo R-squ. (CS):             0.3225\nCovariance Type:              cluster                                         \n====================================================================================================\n                                       coef    std err          z      P>|z|      [0.025      0.975]\n----------------------------------------------------------------------------------------------------\nIntercept                            3.9061      0.478      8.177      0.000       2.970       4.842\nC(policy)[T.gemma-4-26b-a4b-it]     -2.5954      0.401     -6.466      0.000      -3.382      -1.809\nC(policy)[T.glm-53-flash]           -2.6843      0.523     -5.135      0.000      -3.709      -1.660\nC(monitor)[T.gemma-4-26b-a4b-it]    -0.5755      0.282     -2.039      0.041      -1.129      -0.022\nC(monitor)[T.glm-53-flash]          25.0004      0.451     55.449      0.000      24.117      25.884\nsame_model                          -1.9870      0.369     -5.385      0.000      -2.710      -1.264\n====================================================================================================",
+    "method": "logistic GLM, cluster(task) SE",
+    "lpm": {
+      "same_model": {
+        "coef": -0.18337442323403888,
+        "se": 0.027366513519655158,
+        "p": 2.0744288815149352e-11,
+        "ci95": [
+          -0.23701180411499145,
+          -0.1297370423530863
+        ]
+      },
+      "method": "linear probability model on catch, cluster(task) SE"
+    },
+    "score_model": {
+      "same_model": {
+        "coef": -1.5965850146325633,
+        "se": 1.7051314481258877,
+        "p": 0.34909748500986704,
+        "ci95": [
+          -4.938581241865931,
+          1.745411212600804
+        ]
+      }
+    }
+  },
+  "permutation": {
+    "observed_diag_minus_cross": -0.21145428015564205,
+    "n_perms": 300,
+    "p_one_sided_leniency": 0.0,
+    "p_two_sided": 0.0,
+    "perm_mean": -0.028825724697109888,
+    "perm_sd": 0.02667235331933019
+  },
+  "bootstrap": {
+    "same_model": {
+      "rate": 0.65625,
+      "ci95": [
+        0.6015370670069403,
+        0.7094996484649637
+      ]
+    },
+    "same_family": {
+      "rate": NaN,
+      "ci95": [
+        NaN,
+        NaN
+      ]
+    },
+    "cross_family": {
+      "rate": 0.867704280155642,
+      "ci95": [
+        0.8284601131772814,
+        0.9033525978484779
+      ]
+    },
+    "diag_minus_cross": {
+      "value": -0.21145428015564205,
+      "ci95": [
+        -0.26713755925032695,
+        -0.16033594244395347
+      ]
+    }
+  }
+}
