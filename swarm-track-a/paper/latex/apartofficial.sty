@@ -1,0 +1,62 @@
+%% apartofficial.sty — mirrors the official Apart Research hackathon submission template
+%% (centered ruled title, 3-column author grid with affiliations, "With Apart Research",
+%%  italic narrow abstract, black serif numbered sections, template-style info boxes).
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{apartofficial}[2026/11/08 Apart official hackathon template look]
+
+\RequirePackage[letterpaper,top=1in,bottom=1in,left=1.1in,right=1.1in]{geometry}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{newpxtext,newpxmath}
+\RequirePackage{microtype}
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{booktabs}
+\RequirePackage{enumitem}
+\RequirePackage{titlesec}
+\RequirePackage{caption}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage[numbers,sort&compress]{natbib}
+\RequirePackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=blue!50!black,urlcolor=blue!50!black,pdfborder={0 0 0}}
+
+\definecolor{guidebox}{HTML}{FDEBC8}      % the template's peach info box
+\definecolor{guideframe}{HTML}{E8B96A}
+
+%% ---- headings: "1. Introduction" style, plain black serif ------------------
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{0.5em}{}
+\titleformat*{\paragraph}{\bfseries}
+\titlespacing*{\section}{0pt}{1.2em}{0.5em}
+\titlespacing*{\subsection}{0pt}{0.9em}{0.35em}
+\captionsetup{font=small,labelfont=bf,width=0.92\linewidth,skip=5pt}
+\setlist{itemsep=2pt,topsep=3pt,parsep=0pt}
+\setlength{\parskip}{2pt}
+
+%% ---- title block ------------------------------------------------------------
+%% \officialtitle{TITLE}{subtitle}{footnote text}
+\newcommand{\officialtitle}[3]{%
+  \begin{center}
+    {\color{black}\rule{\linewidth}{1.6pt}}\par\vspace{1.4em}
+    {\LARGE\bfseries\MakeUppercase{#1}\footnote{#3}\par}
+    \ifx\relax#2\relax\else\vspace{0.5em}{\normalsize\itshape #2\par}\fi
+    \vspace{1.2em}
+    {\color{black}\rule{\linewidth}{0.7pt}}\par
+  \end{center}\vspace{0.6em}}
+
+%% \authorrow{Name}{Affiliation} x3 inside \begin{authors}...\end{authors}
+\newenvironment{authorgrid}{\begin{center}\begin{tabular}{ccc}}{\end{tabular}\par\vspace{0.9em}%
+  {\centering\textbf{With}\\Apart Research\par}\vspace{1.2em}\end{center}}
+\newcommand{\authorcell}[2]{\begin{tabular}[t]{@{}c@{}}#1\\{\small #2}\end{tabular}}
+
+%% ---- abstract: centered heading, narrow block --------------------------------
+\newenvironment{officialabstract}{%
+  \begin{center}\textbf{Abstract}\end{center}\vspace{-0.4em}
+  \begin{center}\begin{minipage}{0.86\linewidth}\small}{\end{minipage}\end{center}\vspace{0.8em}}
+
+%% ---- guidance / note box (the template's peach box) ---------------------------
+\newtcolorbox{guidance}[1][]{enhanced,breakable,colback=guidebox,colframe=guideframe,
+  boxrule=0.8pt,arc=1.5pt,left=8pt,right=8pt,top=6pt,bottom=6pt,fontupper=\small,
+  title={#1},coltitle=black,fonttitle=\small\bfseries,attach title to upper={\par\smallskip}}
+\newcommand{\codefile}[1]{\texttt{\small #1}}
+\newcommand{\gap}[1]{\textbf{#1}}
+\endinput
