@@ -43,7 +43,7 @@ automatically.
 | 1e `stage1e_ds` | gemma-paraphraser confound (deepseek rewrites gemma subs) | 3,036/3,546 draws | ~4:40 PM |
 | 1g `stage1g_nonote` | is the blind spot an artifact of the planted telemetry sentence? (judge's sharpest objection) | 1,319/~2,280 | ~5:15 PM |
 | 1f `stage1f_reason` | does reasoning close the blind spot? | 423/~1,150 | ~5:30 PM |
-| 1h `stage1h_benexp` | thin-calibration-tails objection (n≈300 benign per gemma cell) | bank generating; scoring queued behind the others | ~7–7:45 PM, AT RISK — if unfinished at freeze it gets the pre-registered-in-flight sentence, no harm |
+| 1h `stage1h_mon{A,B,C}` | thin-calibration-tails objection (n≈300 benign per gemma cell) | bank DONE (599/612 kept); scoring split across 3 keys in parallel at 4:25 PM | ~5:45–6:15 PM (was 7:45; split tripled throughput) |
 
 Agent integrates each on landing: deltas → README dated note → §4 updates → Figure A/5 refresh → commit+push. Then a
 final anchored judge pass (~30 min after 1f lands, ≈6:00 PM).

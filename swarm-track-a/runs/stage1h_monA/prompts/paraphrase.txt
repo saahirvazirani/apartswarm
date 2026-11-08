@@ -1,0 +1,1 @@
+Rewrite this Python code so it has identical behaviour but different variable names, comments, formatting and statement order where safe. Return only the code.
