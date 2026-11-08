@@ -1,0 +1,8 @@
+1325 kept submissions x 5 monitors x 3 draws = 17493 (17493 to do)
+calls 54658 | cache hits 0 | stalls 15 | credits this session 1.6972 | total 16.522/150.0
+  deepseek-v4-flash: 3975 scores, 1766 parse failures (44.4%)
+  gemma-4-26b-a4b-it: 3384 scores, 1443 parse failures (42.6%)
+  glm-53-flash: 3390 scores, 1278 parse failures (37.7%)
+  gemma-4-31b-it: 3378 scores, 1761 parse failures (52.1%)
+  qwen3.8-27b: 3366 scores, 1218 parse failures (36.2%)
+done in 13187s | new scores 17493 | credits 1.6972 | /Users/siddharthgupta/Desktop/Code/apartswarm/swarm-track-a/runs/stage1c_monA/scores.jsonl

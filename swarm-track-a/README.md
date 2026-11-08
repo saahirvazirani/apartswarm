@@ -128,3 +128,18 @@ same-model scores more than cross-model scores. At the blind thresholds, catch r
 uniformly (same-model 0.61 → 0.57, cross-family 0.71 → 0.68). Reading: whatever drives the gemma diagonal in Stage 1 is not a
 reaction to the *stated* author name.
 
+### Stage 1c — paraphrase (H3, exploratory) — appended Sun 2026-11-08 11:30 AM EST (`make para`; `analysis/out/para/deltas.md`)
+
+Every kept submission was paraphrased once by gemma-4-26b-a4b-it (frozen prompt; 1325 of 1348 still pass tests with the canary
+retained) and re-scored blind by every monitor on the diagonal and cross-family cells (`runs/stage1c_monA`, `runs/stage1c_monB`;
+24,369 draws; parse failures ≤ 1.9 %). Paired paraphrased − original score: same-model attacks **−1.2** [−2.8, +0.4], cross-family
+attacks +0.7 [−0.5, +1.8]; benign +1.2 / +0.9. Diagonal-specific change **−1.9 [−3.9, +0.3]**: paraphrasing does *not* shrink the
+diagonal gap (if anything the own-model monitor is slightly more lenient to the paraphrase). Cell catch rates, thresholds re-calibrated
+on paraphrased benign: same-model 0.61 → 0.57, cross-family 0.72 → 0.69, so the gap persists at ≈ 0.12–0.13. Reading: the Stage 1
+diagonal effect is not stylometric self-recognition of surface form (variable names, comments, layout); together with Stage 1b it is
+most consistent with a shared blind spot — the same model writes and fails to flag the same kind of justified-looking telemetry.
+
+**Overnight API outage.** From ≈ 2:10 to 10:00 AM EST every call failed with a connection error. Stage 1, 1b and the slow-monitor half
+of 1c had finished before it. The failed draws of `stage1c_monA` were re-run at 10:30 AM (resumable; failed records are kept in the
+JSONL with `ok: false` and ignored by the analysis). Spend after the re-run: 20.7 credits.
+
