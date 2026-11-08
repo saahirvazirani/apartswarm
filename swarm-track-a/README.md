@@ -235,3 +235,17 @@ cross-family (−0.1) — i.e. gemma-31b is an effective general obfuscating rew
 "optimizing-against-the-monitor" effect, cf. Baker 2025), not evidence of a writer-specific blind spot. Recorded as a null for the
 stated prediction.
 
+
+**Correction note (Sun ~3:15 PM, appended per rule 1 — original text above left unedited).** The headline paragraph above was
+written from the 1:15 AM snapshot. The final recomputed values (`analysis/out/full/fit.json`, `make recompute`) are: same-model
+0.586 [0.542, 0.633] vs cross-family 0.719 [0.678, 0.763], gap −0.133 [−0.165, −0.101]; `same_model` OR 0.576 [0.476, 0.696],
+p = 1.2e-8. Directions and conclusions unchanged.
+
+**Stage 1e pre-registration (Sun ~3:15 PM, before any Stage-1e call).** Cross-family paraphraser control: deepseek-v4-flash
+(different family, no self-leniency) paraphrases every kept gemma-26b and gemma-31b submission (frozen paraphrase prompt,
+byte-identical; run `para_ds`), re-validated in the sandbox; monitors gemma-4-31b-it, gemma-4-26b-a4b-it and qwen3.8-27b
+(cross-family reference) then score the paraphrased bank blind, 3 draws (`stage1e_ds`), thresholds re-calibrated per pair on the
+deepseek-paraphrased benign. Motivation: the Stage-1c paraphraser was gemma-26b — same family as the lenient monitors — so a
+gemma-flavoured paraphrase could have preserved the surface form that carries the blind spot. **Prediction:** if the gemma blind
+spot rides on gemma surface form, the gemma monitors' catch rate on their own deepseek-rewritten attacks rises toward their
+cross-family rate; if it is content-level, the gap persists as in Stage 1c. Either outcome is informative.
