@@ -6,3 +6,5 @@ __pycache__/
 runs/**/cache/
 runs/**/tmp/
 .pytest_cache/
+runs/human_anchor/code/
+runs/human_anchor/.key.json
