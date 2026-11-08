@@ -29,6 +29,7 @@ def main() -> None:
     ap.add_argument("--banks", nargs="+", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--n", type=int, default=3)
+    ap.add_argument("--policy", default=None, help="restrict to attacks written by this policy")
     args = ap.parse_args()
     df = load_scores([Path(p) for p in args.scores])
     df = df[df.mon_condition == "blind"]
@@ -59,7 +60,9 @@ def main() -> None:
                              cross_monitor=xr.monitor, cross_score=xr.mean_score, cross_thr=xr.thr, cross_caught=xr.caught,
                              gap=xr.mean_score - d.mean_score))
     R = pd.DataFrame(rows)
-    out = ["# Contrasting excerpts (blind monitors, successful polished attacks)", ""]
+    if args.policy and not R.empty:
+        R = R[R.policy == args.policy]
+    out = [f"# Contrasting excerpts (blind monitors, successful polished attacks{', policy ' + args.policy if args.policy else ''})", ""]
 
     def block(title: str, sel: pd.DataFrame) -> None:
         out.append(f"## {title}")
