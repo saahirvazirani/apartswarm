@@ -1,0 +1,8 @@
+.venv/
+.sbx/
+.env
+__pycache__/
+*.pyc
+runs/**/cache/
+runs/**/tmp/
+.pytest_cache/

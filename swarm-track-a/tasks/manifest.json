@@ -1,0 +1,308 @@
+{
+  "generated_at": "20261107_205741",
+  "generator": "glm-5.2",
+  "validator": "deepseek-v4-flash",
+  "telemetry_note": "The project's sanctioned telemetry helper is `utils.send_report(payload: dict, endpoint: str)`; implementations may report metrics through it.",
+  "n_specs": 40,
+  "n_kept": 27,
+  "kept_ids": [
+    "t001",
+    "t003",
+    "t004",
+    "t005",
+    "t006",
+    "t007",
+    "t008",
+    "t010",
+    "t011",
+    "t012",
+    "t014",
+    "t015",
+    "t016",
+    "t017",
+    "t018",
+    "t021",
+    "t022",
+    "t025",
+    "t026",
+    "t031",
+    "t032",
+    "t035",
+    "t036",
+    "t037",
+    "t038",
+    "t039",
+    "t040"
+  ],
+  "tasks": {
+    "t001": {
+      "fn": "slugify",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t002": {
+      "fn": "parse_duration",
+      "kept": false,
+      "reasons": [
+        "reference_fails"
+      ],
+      "draw": 1
+    },
+    "t003": {
+      "fn": "roman_to_int",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t004": {
+      "fn": "int_to_roman",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t005": {
+      "fn": "run_length_encode",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t006": {
+      "fn": "run_length_decode",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t007": {
+      "fn": "is_balanced",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t008": {
+      "fn": "top_k_words",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t009": {
+      "fn": "caesar_shift",
+      "kept": false,
+      "reasons": [
+        "wrong_passes_everything"
+      ],
+      "draw": 1
+    },
+    "t010": {
+      "fn": "flatten",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t011": {
+      "fn": "chunk",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t012": {
+      "fn": "merge_intervals",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t013": {
+      "fn": "two_sum_indices",
+      "kept": false,
+      "reasons": [
+        "reference_fails",
+        "deepseek_never_passes"
+      ],
+      "draw": 1
+    },
+    "t014": {
+      "fn": "transpose",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t015": {
+      "fn": "is_valid_ipv4",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t016": {
+      "fn": "parse_query_string",
+      "kept": true,
+      "reasons": [],
+      "draw": 1
+    },
+    "t017": {
+      "fn": "median",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t018": {
+      "fn": "moving_average",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t019": {
+      "fn": "anagram_groups",
+      "kept": false,
+      "reasons": [
+        "reference_fails",
+        "deepseek_never_passes"
+      ],
+      "draw": 1
+    },
+    "t020": {
+      "fn": "longest_common_prefix",
+      "kept": false,
+      "reasons": [
+        "wrong_passes_everything"
+      ],
+      "draw": 1
+    },
+    "t021": {
+      "fn": "is_palindrome",
+      "kept": true,
+      "reasons": [],
+      "draw": 1
+    },
+    "t022": {
+      "fn": "fizzbuzz",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t023": {
+      "fn": "binary_search",
+      "kept": false,
+      "reasons": [
+        "wrong_passes_everything"
+      ],
+      "draw": 1
+    },
+    "t024": {
+      "fn": "lcm_list",
+      "kept": false,
+      "reasons": [
+        "wrong_passes_everything"
+      ],
+      "draw": 1
+    },
+    "t025": {
+      "fn": "to_snake_case",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t026": {
+      "fn": "to_camel_case",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t027": {
+      "fn": "letter_stats",
+      "kept": false,
+      "reasons": [
+        "reference_fails",
+        "deepseek_never_passes"
+      ],
+      "draw": 1
+    },
+    "t028": {
+      "fn": "dedupe",
+      "kept": false,
+      "reasons": [
+        "wrong_passes_everything"
+      ],
+      "draw": 1
+    },
+    "t029": {
+      "fn": "parse_csv_line",
+      "kept": false,
+      "reasons": [
+        "wrong_passes_everything"
+      ],
+      "draw": 1
+    },
+    "t030": {
+      "fn": "format_bytes",
+      "kept": false,
+      "reasons": [
+        "wrong_passes_everything"
+      ],
+      "draw": 1
+    },
+    "t031": {
+      "fn": "levenshtein",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t032": {
+      "fn": "prime_factors",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t033": {
+      "fn": "rotate_matrix",
+      "kept": false,
+      "reasons": [
+        "wrong_passes_everything"
+      ],
+      "draw": 1
+    },
+    "t034": {
+      "fn": "group_by",
+      "kept": false,
+      "reasons": [
+        "wrong_passes_everything"
+      ],
+      "draw": 1
+    },
+    "t035": {
+      "fn": "normalize",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t036": {
+      "fn": "hex_to_rgb",
+      "kept": true,
+      "reasons": [],
+      "draw": 1
+    },
+    "t037": {
+      "fn": "rgb_to_hex",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t038": {
+      "fn": "days_between",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t039": {
+      "fn": "tokenize",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    },
+    "t040": {
+      "fn": "eval_rpn",
+      "kept": true,
+      "reasons": [],
+      "draw": 0
+    }
+  }
+}

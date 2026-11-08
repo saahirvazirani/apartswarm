@@ -1,0 +1,40 @@
+{
+  "id": "t025",
+  "fn": "to_snake_case",
+  "draw": 0,
+  "kept": true,
+  "reasons": [],
+  "gen_cost": 0.0021687600000000005,
+  "n_tests": 5,
+  "ref": {
+    "passed": 5,
+    "failed": 0,
+    "errors": 0,
+    "timed_out": false,
+    "all_pass": true
+  },
+  "wrong": {
+    "passed": 2,
+    "failed": 3,
+    "errors": 0,
+    "timed_out": false
+  },
+  "deepseek": [
+    {
+      "ok": true,
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "all_pass": true,
+      "timed_out": false
+    },
+    {
+      "ok": true,
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "all_pass": true,
+      "timed_out": false
+    }
+  ]
+}

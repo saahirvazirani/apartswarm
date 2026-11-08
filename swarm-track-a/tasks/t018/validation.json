@@ -1,0 +1,40 @@
+{
+  "id": "t018",
+  "fn": "moving_average",
+  "draw": 0,
+  "kept": true,
+  "reasons": [],
+  "gen_cost": 0.00280816,
+  "n_tests": 5,
+  "ref": {
+    "passed": 5,
+    "failed": 0,
+    "errors": 0,
+    "timed_out": false,
+    "all_pass": true
+  },
+  "wrong": {
+    "passed": 3,
+    "failed": 2,
+    "errors": 0,
+    "timed_out": false
+  },
+  "deepseek": [
+    {
+      "ok": true,
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "all_pass": true,
+      "timed_out": false
+    },
+    {
+      "ok": true,
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "all_pass": true,
+      "timed_out": false
+    }
+  ]
+}
