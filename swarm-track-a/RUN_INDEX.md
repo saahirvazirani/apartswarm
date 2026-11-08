@@ -13,6 +13,7 @@
 | Contrasting excerpts (body) | same + banks | — | `.venv/bin/python analysis/excerpts.py --scores runs/stage1_mon*/scores.jsonl --cells analysis/out/full/cells.csv --banks runs/bank_cheap3_v2 runs/bank_rest4 --out analysis/out/full/excerpts.md` |
 | Told-vs-blind deltas (H2, exploratory) | `runs/stage1b_monA` (5 fast monitors), `runs/stage1b_monB` (qwen3.5-397b, glm-5.2); blind baseline from `runs/stage1_mon*` | exploratory (pre-registered task subset) | `make told` → `analysis/out/told/deltas.md` |
 | Paraphrase deltas (H3, exploratory) | `runs/para` (paraphrased bank), `runs/stage1c_monA` (5 fast monitors), `runs/stage1c_monB` (qwen3.5-397b, glm-5.2); originals from `runs/stage1_mon*` | exploratory | `make para` → `analysis/out/para/deltas.md` |
+| Pre-polish appendix: 7×7 on raw (un-polished) attacks | `runs/stage1raw_monAll` + Stage-1 benign | exploratory (appendix) | `make raw` → `analysis/out/raw/` |
 
 ## Gate log
 

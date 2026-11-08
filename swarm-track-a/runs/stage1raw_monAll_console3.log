@@ -1,0 +1,10 @@
+635 kept submissions x 7 monitors x 3 draws = 13335 (5246 to do)
+calls 5288 | cache hits 0 | stalls 0 | credits this session 1.1256 | total 22.853/150.0
+  deepseek-v4-flash: 3153 scores, 1248 parse failures (39.6%)
+  gemma-4-26b-a4b-it: 3139 scores, 1234 parse failures (39.3%)
+  gemma-4-31b-it: 3135 scores, 1233 parse failures (39.3%)
+  qwen3.8-27b: 3136 scores, 1232 parse failures (39.3%)
+  qwen3.5-397b: 2065 scores, 160 parse failures (7.7%)
+  glm-53-flash: 3138 scores, 1290 parse failures (41.1%)
+  glm-5.2: 2065 scores, 160 parse failures (7.7%)
+done in 1753s | new scores 5246 | credits 1.1256 | /Users/siddharthgupta/Desktop/Code/apartswarm/swarm-track-a/runs/stage1raw_monAll/scores.jsonl
