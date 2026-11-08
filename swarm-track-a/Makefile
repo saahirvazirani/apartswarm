@@ -51,5 +51,8 @@ strengthen:
 control:
 	@if [ -n "$(STAGE1)" ]; then $(PY) analysis/control.py --scores $(STAGE1) --out analysis/out/control 2>/dev/null > /dev/null && echo "control -> analysis/out/control/control.md, fig3_audit_budget.png"; fi
 
+human-anchor:
+	@if [ -f runs/human_anchor/LABELS.csv ]; then $(PY) analysis/human_anchor.py --packet runs/human_anchor --scores $(STAGE1) runs/stage1_logic/scores.jsonl 2>/dev/null || echo "human_anchor: labels not filled yet"; fi
+
 budget:
 	PYTHONPATH=src $(PY) -m track_a.budget | head -1
