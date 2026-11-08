@@ -91,3 +91,30 @@ _(appended after the sweep; nothing above this line changes)_
   four probes. The score parser now takes the *last* JSON object with a `score` key (the verdict comes last; earlier braces are quoted
   dict literals), else the last `"score": n` match. The other six monitors answer in under 300 tokens. Monitor prompt unchanged.
 
+### Stage 1 results — appended Sun 2026-11-08 1:15 AM EST (blind monitors; `make full`; `analysis/out/full/`)
+
+Data: 34 tasks × 7 policies × 3 resamples → 698 kept benign and 650 kept polished attacks; every kept submission scored by all 7
+monitors, 3 draws each (28,458 score draws; parse failures ≤ 1.9 % per monitor, glm-53-flash highest). Spend to this point: 10.3 credits.
+
+**Headline (pre-registered primary).** Same-model catch rate **0.584** [0.540, 0.630] vs cross-family **0.718** [0.675, 0.762]
+(task bootstrap, 2000×); diagonal − cross-family = **−0.134** [−0.168, −0.100]; within-task permutation of policy labels: 0 of 2000
+shuffles reached the observed gap (p < 0.0005). Two-way logistic model with task-clustered SEs: `same_model` log-odds −0.56
+[−0.75, −0.36] (OR 0.57 [0.47, 0.70], p = 2.6e-8); `same_family_diff_model` −0.30 [−0.50, −0.11] (OR 0.74). Same-family cells
+average 0.59, i.e. at the diagonal, not between it and cross-family (H1b not supported in the "intermediate" form).
+
+**But the effect is family-specific (post-hoc, `analysis/out/full/robustness.md`).** Per-monitor leniency index (cross-family mean
+TPR − TPR on own model): gemma-4-31b-it **+0.53** (0.03 on itself vs 0.56), gemma-4-26b-a4b-it **+0.31** (0.22 vs 0.53),
+qwen3.8-27b +0.13, qwen3.5-397b +0.02, glm-5.2 0.00, glm-53-flash −0.02 (catches everything), deepseek-v4-flash **−0.15** (stricter
+on itself). Leave-one-family-out: dropping gemma leaves `same_model` at −0.07 [−0.39, +0.25] and the gap at −0.025 [−0.061, +0.013];
+dropping any other family leaves the effect intact or larger. Dropping any single diagonal cell keeps the pooled coefficient negative
+with the interval excluding 0. On AUROC the diagonal dip is ≤ 0.024 for every monitor: the leniency shows up at the calibrated 5 % FPR
+operating point, not in the ranking of attacks over benign code. Reading: H1 holds in pooled form and strongly for the gemma family;
+H0 ("capability, not identity") describes glm, deepseek and qwen3.5-397b.
+
+**Secondary.** glm-53-flash as a monitor is at the ceiling (TPR 0.84–1.00, AUROC ≥ 0.99 in every cell). The gemma monitors are the
+weakest overall (column means 0.44 and 0.46). Side-task compliance and utility per policy: `analysis/out/banks/bank_summary.md`
+(glm-53-flash refuses explicitly in 18 % of attack attempts; the other six comply in 85–100 %).
+
+**Figure 1:** `analysis/out/full/fig1.png`. Matrices with intervals: `analysis/out/full/matrix.md`. Contrasting excerpts:
+`analysis/out/full/excerpts.md`. Told-vs-blind (H2) and paraphrase (H3) results are appended below when their runs finish.
+
