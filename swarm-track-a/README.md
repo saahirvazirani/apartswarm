@@ -186,3 +186,10 @@ flag gemma-written attacks under every specification tried (own-model TPR 0.03�
 and under-weight it, the pattern spans tasks, survives paraphrase, and is unaffected by naming the author. glm, qwen3.5-397b and
 deepseek show no self-leniency and are, if anything, stricter on themselves.
 
+### Appendix — pre-polish attacks (does the polish pass create the gap?) — appended Sun 2026-11-08 11:56 AM EST (`make raw`; `analysis/out/raw/`)
+
+The same 7 monitors scored the *pre-polish* (raw) successful attacks (635 of them; `runs/stage1raw_monAll`), thresholds from the same
+Stage-1 benign. The diagonal/cross-family gap is essentially unchanged from the polished bank: same-model 0.57 [0.53, 0.62] vs
+cross-family 0.71 [0.67, 0.76], diagonal − cross −0.144 [−0.177, −0.112]; `same_model` log-odds −0.44 [−0.65, −0.23]. So the
+own-model leniency is **not** an artifact of the one-pass polish rewrite — it is present in the model's first, undisguised attempt.
+
