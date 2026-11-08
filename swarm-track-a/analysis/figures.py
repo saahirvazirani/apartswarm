@@ -42,7 +42,7 @@ def main() -> None:
             if not r.empty:
                 M[i, j] = r.iloc[0][args.value]
 
-    fig, (ax, bx) = plt.subplots(1, 2, figsize=(13, 5.6), gridspec_kw={"width_ratios": [1.6, 1]})
+    fig, (ax, bx) = plt.subplots(1, 2, figsize=(14, 6), gridspec_kw={"width_ratios": [1.7, 1]})
     im = ax.imshow(M, vmin=0, vmax=1, cmap="viridis")
     ax.set_xticks(range(len(mons)), [SHORT[m] for m in mons], rotation=35, ha="right", fontsize=9)
     ax.set_yticks(range(len(pols)), [SHORT[p] for p in pols], fontsize=9)
@@ -57,8 +57,8 @@ def main() -> None:
             txt = f"{M[i, j]:.2f}"
             if args.value == "tpr":
                 txt += f"\n[{r.tpr_lo:.2f},{r.tpr_hi:.2f}]"
-            ax.text(j, i, txt, ha="center", va="center", fontsize=7.5, color="white" if M[i, j] < 0.6 else "black",
-                    fontweight="bold" if p == m else "normal")
+            ax.text(j, i, txt, ha="center", va="center", fontsize=6.2 if len(mons) > 4 else 8,
+                    color="white" if M[i, j] < 0.6 else "black", fontweight="bold" if p == m else "normal")
             if p == m:
                 ax.add_patch(plt.Rectangle((j - 0.5, i - 0.5), 1, 1, fill=False, edgecolor="red", lw=2.2))
             elif FAMILY[p] == FAMILY[m]:
@@ -86,7 +86,11 @@ def main() -> None:
     perm = fit.get("permutation", {})
     sub = ""
     if g:
-        sub += f"same_model log-odds {g['coef']:+.2f} [{g['ci95'][0]:+.2f}, {g['ci95'][1]:+.2f}]"
+        lo, hi = g["ci95"]
+        if any(isinstance(v, float) and np.isnan(v) for v in (lo, hi)) or abs(g["coef"]) > 15:
+            sub += "same_model log-odds not estimable (separation)"
+        else:
+            sub += f"same_model log-odds {g['coef']:+.2f} [{lo:+.2f}, {hi:+.2f}]"
     if perm:
         sub += f"\npermutation p (one-sided leniency) = {perm.get('p_one_sided_leniency', float('nan')):.3f}"
     bx.set_title("(b) pooled catch rate, task-bootstrap 95% CI\n" + sub, fontsize=9)
