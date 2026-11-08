@@ -118,6 +118,9 @@ def main() -> None:
         lines = summarize(j, "delta", out, "Paraphrased minus original suspicion score (same monitors)")
         co = cells(o, args.fpr)
         cp = cells(ps, args.fpr)
+        cp = cp[cp.n_attack > 0]
+        scored = set(zip(cp.policy, cp.monitor))
+        co = co[[(p_, m_) in scored for p_, m_ in zip(co.policy, co.monitor)]]   # same (policy, monitor) cells on both sides
         lines += ["", "| relation | mean cell TPR original | mean cell TPR paraphrased | cells |", "|---|---|---|---|"]
         for rel in ("same_model", "same_family", "cross_family"):
             a_, b_ = co[co.rel == rel] if "rel" in co else co.iloc[0:0], cp[cp.rel == rel] if "rel" in cp else cp.iloc[0:0]
