@@ -1,4 +1,4 @@
-# Committee / deployment cost-safety analysis (post-hoc, 2026-11-08 19:12)
+# Committee / deployment cost-safety analysis (post-hoc, 2026-11-08 21:46)
 
 Inputs: `analysis/out/full/per_submission.csv` (blind monitors; attacks = stage **polished**, benign = stage **raw**).
 Operating point: ROC-interpolated TPR at exactly 5% FPR per (policy, monitor-or-committee), the tie-robust
