@@ -144,15 +144,12 @@ def main() -> None:
             cap.append(f"same_model log-odds {g['coef']:+.2f} [{lo:+.2f}, {hi:+.2f}]")
     if perm:
         cap.append(f"permutation p (one-sided leniency) = {perm.get('p_one_sided_leniency', float('nan')):.3f}")
-    bx.set_title("(b) Pooled catch rate, task-bootstrap 95% CI", fontsize=11, pad=34)
-    if cap:
-        bx.text(0.5, 1.025, "\n".join(cap), transform=bx.transAxes, ha="center", va="bottom",
-                fontsize=9, color=MUTED)
+    bx.set_title("(b) Pooled by relationship", fontsize=11, pad=10)
+    # stats caption intentionally omitted from the figure (lives in the text); values remain in fit.md
+    _ = cap
     if args.title:
         main_t, _, detail = args.title.partition(" (")
         fig.suptitle(main_t, fontsize=14, y=0.99)
-        if detail:
-            fig.text(0.5, 0.925, "(" + detail, ha="center", fontsize=10.5, color=MUTED)
     fig.tight_layout(rect=(0, 0, 1, 0.90))
     fig.savefig(args.out, dpi=300)
     print(f"[written] {args.out}")

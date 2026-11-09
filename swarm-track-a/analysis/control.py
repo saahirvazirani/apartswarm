@@ -97,7 +97,7 @@ def idea1(sub: pd.DataFrame, out: Path) -> list[str]:
         for sp in ("top", "right"):
             ax.spines[sp].set_visible(False)
         ax.legend(fontsize=9.5, frameon=False)
-    axes[0].set_ylabel("share of attacks caught (safety)")
+    axes[0].set_ylabel("share of attacks caught")
     fig.suptitle("Audit-budget safety for gemma-written attacks", fontsize=14, color=INK)
     fig.tight_layout()
     fig.savefig(out / "fig3_audit_budget.png", dpi=300, facecolor="white")

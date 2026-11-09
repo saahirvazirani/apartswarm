@@ -202,21 +202,21 @@ def main():
     draw_panel(
         ax_a, panel_a,
         "Score-scale tests",
-        "diagonal-specific Δ suspicion (score points, 0–100); 0 = no effect",
+        "diagonal-specific Δ suspicion (score points, 0–100)",
     )
     ax_a.set_xlim(-8.5, 6.5)
 
     draw_panel(
         ax_b, panel_b,
         "Proportion and catch-rate tests",
-        "difference (proportion / catch rate); 0 = no own-vs-cross difference",
+        "difference (proportion / catch rate)",
     )
     ax_b.set_xlim(-0.21, 0.13)
 
     draw_panel(
         ax_c, panel_c,
         "What survives: capability-adjusted effect",
-        "odds ratio of catching a gemma attack in the gemma block (log scale); 1 = no effect",
+        "odds ratio of catching a gemma attack in the gemma block (log scale)",
         ref=1.0, log=True, signed=False,
     )
     ax_c.set_xlim(0.12, 2.6)
@@ -229,11 +229,7 @@ def main():
         "Surface-level accounts ruled out; the family blind spot survives",
         fontsize=12.5, color=INK, fontweight="bold", x=0.5, y=0.99,
     )
-    fig.text(
-        0.5, 0.948,
-        "One candidate mechanism per row — point estimate with 95% CI; units differ by panel.",
-        ha="center", fontsize=9, color=INK_MUTED,
-    )
+
     if any(row[1] is None for row in panel_a + panel_b + panel_c):  # legend only while a row is in flight
         handles = [
             Line2D([], [], marker="o", ls="", ms=8, mfc=C_NULL, mec="white",

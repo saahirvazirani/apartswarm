@@ -185,8 +185,8 @@ def figure(singles: pd.DataFrame, comms: pd.DataFrame, best_single: pd.Series, b
     ax1.set_xticks([c := COST[m] for m in MODELS], [f"{SHORT[m]}\n{COST[m]:.2f}" for m in MODELS],
                    fontsize=8.0, rotation=18)
     ax1.minorticks_off()
-    ax1.set_xlabel("monitor cost index (input + output credits / 1M tok, log scale)")
-    ax1.set_ylabel(f"catch rate at exactly {FPR:.0%} FPR (ROC-interpolated)")
+    ax1.set_xlabel("monitor cost (credits / 1M tokens, log scale)")
+    ax1.set_ylabel(f"catch rate at {FPR:.0%} FPR")
     ax1.set_ylim(-0.03, 1.03)
     ax1.set_title("A. Single monitors: catch rate vs cost per policy", color="#1F2937")
     from matplotlib.lines import Line2D
@@ -210,16 +210,15 @@ def figure(singles: pd.DataFrame, comms: pd.DataFrame, best_single: pd.Series, b
     # best-committee members are listed per policy in committee.md (illegible at print size in-bar)
     ax2.set_xticks(x, [SHORT[m] for m in MODELS], fontsize=8.4)
     ax2.set_xlabel("policy (attack author)")
-    ax2.set_ylabel(f"catch rate at exactly {FPR:.0%} FPR")
+    ax2.set_ylabel(f"catch rate at {FPR:.0%} FPR")
     ax2.set_ylim(0, 1.3)
     ax2.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
     ax2.set_title("B. Committees close the self-monitoring blind spot", color="#1F2937")
     ax2.legend(loc="upper left", fontsize=8.6, frameon=False, ncol=1)
 
-    fig.suptitle("Monitor assignment as a deployment choice: cost vs safety at a 5% audit budget",
+    fig.suptitle("Monitor assignment: cost vs safety at a 5% audit budget",
                  fontsize=12.5, y=1.00, color="#1F2937")
-    fig.text(0.5, 0.925, "Polished attacks vs raw benign, blind monitors; estimator and cost-index details in committee.md",
-             ha="center", fontsize=9, color="#6B7280")
+
     fig.tight_layout(rect=(0, 0.01, 1, 0.9))
     fig.savefig(OUT / "fig4_deployment.png", dpi=300, facecolor="white", bbox_inches="tight")
     plt.close(fig)
