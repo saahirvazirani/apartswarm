@@ -113,7 +113,7 @@ def main() -> None:
     cb.set_label("TPR at per-pair 5% FPR" if args.value == "tpr" else "AUROC", color=MUTED, fontsize=10)
     cb.ax.tick_params(color=MUTED, labelcolor=INK, labelsize=9)
     cb.outline.set_edgecolor(GRID)
-    ax.set_title("(a) Catch rate; crimson box = same model, dashed amber = same family", fontsize=11, pad=28)
+    ax.set_title("(a) Catch rate per cell", fontsize=11, pad=28)
 
     # (b) pooled catch rate by relationship
     b = fit.get("bootstrap", {})

@@ -164,53 +164,57 @@ def figure(singles: pd.DataFrame, comms: pd.DataFrame, best_single: pd.Series, b
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4.8))
 
     # Panel A -- cost vs catch rate, one point per (policy, monitor)
-    mark = {"same_model": ("*", 170), "same_family": ("s", 45), "cross_family": ("o", 32)}
-    hue = {"gemma-4-31b-it": "#c0392b", "gemma-4-26b-a4b-it": "#e67e22"}
+    mark = {"same_model": ("*", 260), "same_family": ("s", 60), "cross_family": ("o", 44)}
+    hue = {"gemma-4-31b-it": "#B3324B", "gemma-4-26b-a4b-it": "#C06C10"}
     for p in MODELS:
         d = singles[singles.policy == p].sort_values("cost_index")
-        col, z, lw, a = hue.get(p, "#b0b7bd"), (3 if p in hue else 1), (1.6 if p in hue else 0.8), (1.0 if p in hue else 0.55)
-        ax1.plot(d.cost_index, d.tpr, "-", color=col, lw=lw, alpha=0.6 * a, zorder=z)
+        col, z, a = hue.get(p, "#B9C1CA"), (3 if p in hue else 1), (1.0 if p in hue else 0.55)
         for r, (mk, sz) in mark.items():
             dd = d[d.rel == r]
             ax1.scatter(dd.cost_index, dd.tpr, marker=mk, s=sz, color=col, alpha=a,
-                        edgecolors="white", linewidths=0.4, zorder=z + 1)
-    offs = {"gemma-4-31b-it": (10, -13), "gemma-4-26b-a4b-it": (-6, 10)}
+                        edgecolors="white", linewidths=0.8, zorder=z + 1)
+    ax1.grid(axis="y", color="#E5E7EB", lw=0.8)
+    ax1.set_axisbelow(True)
+    offs = {"gemma-4-31b-it": (14, -4), "gemma-4-26b-a4b-it": (0, -20)}
     for p in hue:  # label the own-model points of the two gemma rows
         r = singles[(singles.policy == p) & (singles.rel == "same_model")].iloc[0]
         ax1.annotate(f"{SHORT[p]} judging itself", (r.cost_index, r.tpr), xytext=offs[p],
-                     textcoords="offset points", fontsize=8, color=hue[p],
-                     ha="right" if offs[p][0] < 0 else "left")
+                     textcoords="offset points", fontsize=9.5, color=hue[p], va="center",
+                     ha="center" if offs[p][0] == 0 else ("right" if offs[p][0] < 0 else "left"))
     ax1.set_xscale("log")
     ax1.set_xticks([c := COST[m] for m in MODELS], [f"{SHORT[m]}\n{COST[m]:.2f}" for m in MODELS],
-                   fontsize=6.6)
+                   fontsize=8.0, rotation=18)
     ax1.minorticks_off()
     ax1.set_xlabel("monitor cost index (input + output credits / 1M tok, log scale)")
     ax1.set_ylabel(f"catch rate at exactly {FPR:.0%} FPR (ROC-interpolated)")
     ax1.set_ylim(-0.03, 1.03)
-    ax1.set_title("A. Single monitors: catch rate vs cost, per policy (gemma policies highlighted)")
+    ax1.set_title("A. Single monitors: catch rate vs cost per policy", color="#1F2937")
     from matplotlib.lines import Line2D
     ax1.legend(handles=[
-        Line2D([], [], marker="*", ls="", ms=11, color="#555", label="same model"),
-        Line2D([], [], marker="s", ls="", ms=6, color="#555", label="same family"),
-        Line2D([], [], marker="o", ls="", ms=5, color="#555", label="cross family"),
-        Line2D([], [], ls="-", color=hue["gemma-4-31b-it"], label="policy gemma-4-31b-it"),
-        Line2D([], [], ls="-", color=hue["gemma-4-26b-a4b-it"], label="policy gemma-4-26b-a4b-it"),
-        Line2D([], [], ls="-", color="#b0b7bd", label="other policies"),
-    ], loc="lower right", fontsize=7.4, frameon=False)
+        Line2D([], [], marker="*", ls="", ms=13, color="#4B5563", label="same model"),
+        Line2D([], [], marker="s", ls="", ms=7, color="#4B5563", label="same family"),
+        Line2D([], [], marker="o", ls="", ms=6, color="#4B5563", label="cross family"),
+        Line2D([], [], marker="o", ls="", ms=7, color=hue["gemma-4-31b-it"], label="gemma-31b policy"),
+        Line2D([], [], marker="o", ls="", ms=7, color=hue["gemma-4-26b-a4b-it"], label="gemma-26b policy"),
+        Line2D([], [], marker="o", ls="", ms=7, color="#B9C1CA", label="other policies"),
+    ], loc="lower right", fontsize=8.6, frameon=False)
 
     # Panel B -- own monitor vs best single vs best committee, per policy
     x = np.arange(len(MODELS))
     w = 0.27
-    ax2.bar(x - w, [own[p] for p in MODELS], w, color="#c0392b", label="own-model monitor")
-    ax2.bar(x, [best_single[p] for p in MODELS], w, color="#5d6d7e", label="best single monitor")
-    ax2.bar(x + w, [best_comm[p] for p in MODELS], w, color="#1e8449", label="best 2-monitor committee (max fusion)")
+    ax2.bar(x - w, [own[p] for p in MODELS], w, color="#B3324B", edgecolor="white", linewidth=1.2, label="own-model monitor")
+    ax2.bar(x, [best_single[p] for p in MODELS], w, color="#2563EB", edgecolor="white", linewidth=1.2, label="best single monitor")
+    ax2.bar(x + w, [best_comm[p] for p in MODELS], w, color="#0E9A5E", edgecolor="white", linewidth=1.2, label="best 2-monitor committee (max fusion)")
+    ax2.grid(axis="y", color="#E5E7EB", lw=0.8)
+    ax2.set_axisbelow(True)
     # best-committee members are listed per policy in committee.md (illegible at print size in-bar)
-    ax2.set_xticks(x, [SHORT[m] for m in MODELS], fontsize=7.6)
+    ax2.set_xticks(x, [SHORT[m] for m in MODELS], fontsize=8.4)
     ax2.set_xlabel("policy (attack author)")
     ax2.set_ylabel(f"catch rate at exactly {FPR:.0%} FPR")
-    ax2.set_ylim(0, 1.05)
-    ax2.set_title("B. Committees close the self-monitoring blind spot")
-    ax2.legend(loc="upper left", fontsize=7.4, frameon=False, ncol=1)
+    ax2.set_ylim(0, 1.3)
+    ax2.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
+    ax2.set_title("B. Committees close the self-monitoring blind spot", color="#1F2937")
+    ax2.legend(loc="upper left", fontsize=8.6, frameon=False, ncol=1)
 
     fig.suptitle("Monitor assignment as a deployment choice: cost vs safety at a 5% audit budget",
                  fontsize=12.5, y=1.00, color="#1F2937")
