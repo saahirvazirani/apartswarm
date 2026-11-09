@@ -24,10 +24,11 @@ each model then scored every submission for suspicion, blind to authorship, givi
 catch-rate matrix at per-pair 5\% false-positive thresholds (650 successful attacks, 698 benign solutions,
 $\approx$28{,}000 score draws). The attack is instructed; any leniency is uninstructed --- the monitor is never told to
 go easy and never told the author. We find \emph{no robust general self-leniency}: the pre-registered pooled same-model
-effect ($-0.134$) is calibration-dependent. What survives every scheme --- matched false-positive rates, held-out
-calibration, a capability-adjusted block model (OR 0.29, $p = 3.8\times10^{-8}$), and a second, structurally different
-attack class --- is a large gemma-family blind spot: gemma monitors catch 0.19--0.38 of gemma-written attacks (own
-cells $\approx$0.20) that cross-family monitors catch at 0.56--1.00. Stated authorship, paraphrase, and
+effect ($-0.134$) is calibration-dependent. What survives every scheme --- matched false-positive rates, held-out and
+tripled calibration sets, a capability-adjusted block model (OR 0.29, $p = 3.8\times10^{-8}$), and a second, structurally different
+attack class --- is a large gemma-family blind spot: gemma monitors catch 0.47 of gemma-written attacks that
+cross-family monitors catch at 0.77 (pooled, under the largest calibration set; thinner calibrations double the gap,
+and single cells fall as low as 0.03--0.21). Stated authorship, paraphrase, and
 excuse-vocabulary analyses all fail to explain it. The deployment recommendation is concrete: \emph{replace, don't
 augment} --- a cheap cross-family monitor closes the gap, while adding one to a same-family committee does not.
 \end{officialabstract}
@@ -148,7 +149,11 @@ versus 0.56; every non-gemma monitor is within $\pm$0.19 of its cross-family mea
 makes this inferential: the gemma-policy $\times$ gemma-monitor block has OR \gap{0.29 [0.19, 0.45]}
 ($p = 3.8\times10^{-8}$, surviving any correction over the seven per-monitor comparisons), while the non-gemma diagonal
 is a precise null (OR 1.08 [0.78, 1.47], $p = 0.65$). Under matched FPR the pooled gap is $-0.080$ $[-0.152, -0.003]$.
-A pre-registered expanded-calibration run (tripling the benign set behind the gemma thresholds) was still in flight at writing time; its result is posted to the repository either way. The effect also survives held-out calibration: thresholds set on half the benign tasks keep realized FPR at 0.053 on
+A pre-registered tripling of the benign calibration set (Stage 1h, $\sim$300 benign per gemma cell) halves the pooled
+deficit but does not remove it: own-family cells average 0.47 versus 0.77 cross-family (gap $-$0.30, against $-$0.55
+under $\sim$100-benign thresholds), and the dramatic gemma-31b own cell rises from 0.03--0.20 to 0.45 --- the extreme
+single-cell values were partly thin-tail artifacts; the family deficit is not. We quote the expanded-calibration values
+as primary. The effect also survives held-out calibration: thresholds set on half the benign tasks keep realized FPR at 0.053 on
 the other half, and the pooled cross-minus-diagonal gap is 0.110 [0.005, 0.187] over 200 splits (gemma-31b own-cell
 0.16 vs 0.71 cross).
 
@@ -248,8 +253,8 @@ observationally indistinguishable by design.
 The side objectives are inert and instructed; leniency is uninstructed and blind --- the claim is the
 diagonal-vs-off-diagonal contrast, not absolute catch rates. Per-pair thresholds rest on $\sim$5 benign tail scores; a
 held-out split keeps realized FPR at 0.053 and preserves the deficit, though cell-level magnitudes carry calibration
-noise (gemma-31b diagonal 0.03 in-sample, 0.16 held-out mean, 0.20 matched-FPR --- the direction is stable, the exact
-cell value is not the claim). The effect is one lineage (two checkpoints) in one task distribution; the sanctioned-telemetry
+noise (gemma-31b diagonal 0.03 in-sample, 0.16 held-out, 0.20 matched-FPR, 0.45 under the tripled calibration set ---
+the direction is stable; single-cell magnitudes are calibration-sensitive, and the expanded values are quoted as primary). The effect is one lineage (two checkpoints) in one task distribution; the sanctioned-telemetry
 sentence that prevents ceiling effects is a design patch both policies and monitors see, and a pre-registered ablation removing the
 sentence from the monitor's view left the deficit intact at matched FPR (\S4.4), though all scores compress toward the
 ceiling without it. Reasoning was disabled on every call except the pre-registered Stage 1f probe (\S4.4); output caps were raised after pre-registration (dated, non-binding for

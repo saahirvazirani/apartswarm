@@ -46,7 +46,10 @@ DO NOT use numbers from chat logs or earlier drafts — several changed when the
   incomplete); rerun `make para-ds` after `runs/stage1e_ds` finishes, then `make mech` to update Figure 5. Do not quote until then.
 - Stage 1f reasoning-on probe: `runs/stage1f_reason/` (gemma-31b, reasoning=medium).
 - Stage 1g sentence-removal ablation: `runs/stage1g_nonote/`.
-- Stage 1h benign calibration expansion: `runs/stage1h_benexp/` (n≈300 benign per gemma cell).
+- Stage 1h LANDED (quote as PRIMARY for the gemma contrast): tripled benign calibration (~300/cell, coverage 99.7–100%) —
+  pooled own-family 0.47 vs cross-family 0.77 interp (0.43 vs 0.71 quantile), gap ≈ −0.30 (was −0.55 thin-tail);
+  gemma-31b own cell 0.03→0.44 quantile / 0.20→0.45 interp; gemma-26b 0.22→0.46/0.60; sibling cell on g31 attacks stays
+  0.21; cross cells 0.52–1.00. `analysis/out/expanded/expanded.md`.
 - Held-out calibration split: DONE (`analysis/out/heldout/heldout.md`): realized FPR 0.053 vs nominal 0.05 (worst
   cell 0.070); pooled cross−diagonal gap 0.110 [0.005, 0.187] over 200 task-level splits; gemma-31b own 0.16 vs 0.71
   cross held-out. Mean per-cell |Δ| vs full-sample 0.036. Intervals are split-variability only (fixed attack set).
