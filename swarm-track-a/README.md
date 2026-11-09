@@ -322,3 +322,14 @@ reasoning vs 0.20 without; the same-family cell worsens (0.17 vs 0.38). Absolute
 under reasoning (attack means 58.9 → 4.1, benign 16.7 → 1.0; thresholds fall to 0), so the deficit is not a fast-judgment
 artifact and extra inference-time compute is not a mitigation here — if anything deliberation talks the monitor out of its
 suspicion on this code. (`analysis/out/stage1f/contrast.md`.)
+
+**Stage 1h result (Sun ~7:30 PM, appended; pre-registered Sun ~3:42 PM, see timestamp-correction note in RUN_INDEX).**
+Benign calibration expansion: with every gemma-cell threshold resting on ~298–301 benign submissions (~14 tail points)
+instead of ~100 (~5), coverage 99.7–100%, original cells reproduced 14/14 as a cross-check. **The truth is between the
+two pre-stated readings: the deficit shrinks materially AND persists.** Pooled own-family TPR 0.43 (quantile) / 0.47
+(interp) vs cross-family 0.71 / 0.77 — gap ≈ −0.28/−0.30, roughly half the −0.55 measured under thin-tailed thresholds.
+The dramatic single cells were partly calibration artifacts: gemma-31b's own cell rises 0.03 → 0.44 (quantile) and
+0.20 → 0.45 (interp); gemma-26b's 0.22 → 0.46/0.60. The gemma-31b row still shows the family deficit plainly (own 0.45,
+sibling 0.21, cross 0.57–0.96). Held-out on the expanded set: own cells 0.35–0.42 vs cross up to 0.93–0.99, realized FPR
+≈ 0.05. We quote the expanded-calibration values as primary from here on; the thin-tail history stays disclosed.
+(`analysis/out/expanded/expanded.md`.)

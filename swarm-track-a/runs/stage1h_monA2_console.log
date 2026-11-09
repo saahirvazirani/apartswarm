@@ -1,0 +1,4 @@
+599 kept submissions x 1 monitors x 3 draws = 1797 (1797 to do)
+calls 1898 | cache hits 0 | stalls 101 | credits this session 0.8796 | total 30.843/150.0
+  glm-53-flash: 1797 scores, 2 parse failures (0.1%)
+done in 2925s | new scores 1797 | credits 0.8796 | /Users/siddharthgupta/Desktop/Code/apartswarm/swarm-track-a/runs/stage1h_monA2/scores.jsonl
