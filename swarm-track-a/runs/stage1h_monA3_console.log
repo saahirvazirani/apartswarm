@@ -1,0 +1,4 @@
+599 kept submissions x 1 monitors x 3 draws = 1797 (1797 to do)
+calls 2440 | cache hits 0 | stalls 643 | credits this session 0.0843 | total 30.048/150.0
+  gemma-4-26b-a4b-it: 1797 scores, 0 parse failures (0.0%)
+done in 3506s | new scores 1797 | credits 0.0843 | /Users/siddharthgupta/Desktop/Code/apartswarm/swarm-track-a/runs/stage1h_monA3/scores.jsonl
